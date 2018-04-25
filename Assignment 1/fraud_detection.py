@@ -20,8 +20,9 @@
 #
 
 # In[7]:
+from IPython import get_ipython
 
-get_ipython().magic(u'matplotlib inline')
+#get_ipython().magic('matplotlib inline')
 import datetime
 import time
 import matplotlib.pyplot as plt
