@@ -95,7 +95,7 @@ def aggregate_mean(before_aggregate):
         #print before_aggregate[0]
     return after_aggregate
 if __name__ == "__main__":
-    src = '/Users/Qlin/Documents/TA/fraud_credit_card/data_for_student_case.csv'
+    src = 'data_for_student_case.csv'
     ah = open(src, 'r')
     x = []#contains features
     y = []#contains labels
