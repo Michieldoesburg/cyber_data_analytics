@@ -23,7 +23,9 @@
 import datetime
 import time
 import matplotlib.pyplot as plt
+from imblearn.over_sampling import SMOTE
 from sklearn import neighbors
+from sklearn import linear_model
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import classification_report
 from sklearn.cross_validation import train_test_split
@@ -211,6 +213,21 @@ for item in x:
     item[7] = verification_dict[item[7]]
     item[10] = accountcode_dict[item[10]]
 
+def printAll(TP, FP, FN, TN):
+    print 'TP: ' + str(TP)
+    print 'FP: ' + str(FP)
+    print 'FN: ' + str(FN)
+    print 'TN: ' + str(TN)
+    if TP + FP > 0:
+        print 'TPR: ' + str(float(TP) / (float(TP) + float(FP)))
+    else:
+        print 'TPR is undefined.'
+
+    if FP + TN > 0:
+        print 'FPR: ' + str(float(FP) / (float(FP) + float(TN)))
+    else:
+        print 'FPR is undefined.'
+
 #x_mean = []
 #x_mean = aggregate_mean(x);
 x_mean = x;
@@ -229,30 +246,70 @@ for i in range(len(x_mean)):
     ch_dfa.write('\n')
     sentence=[]
     ch_dfa.flush()
-TP, FP, FN, TN = 0, 0, 0, 0
-x_array = np.array(x)
-y_array = np.array(y)
-usx = x_array
-usy = y_array
-x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = 0.2)#test_size: proportion of train/test data
-#clf = neighbors.KNeighborsClassifier(algorithm = 'kd_tree')
-clf = RandomForestClassifier()
-clf.fit(x_train, y_train)
-y_predict = clf.predict(x_test)
-for i in xrange(len(y_predict)):
-    if y_test[i]==1 and y_predict[i]==1:
-        TP += 1
-    if y_test[i]==0 and y_predict[i]==1:
-        FP += 1
-    if y_test[i]==1 and y_predict[i]==0:
-        FN += 1
-    if y_test[i]==0 and y_predict[i]==0:
-        TN += 1
-print 'TP: '+ str(TP)
-print 'FP: '+ str(FP)
-print 'FN: '+ str(FN)
-print 'TN: '+ str(TN)
-#print confusion_matrix(y_test, answear) watch out the element in confusion matrix
-precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
-predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
 
+# Several classifiers to be used.
+clf1 = RandomForestClassifier()
+clf2 = neighbors.KNeighborsClassifier(algorithm='kd_tree')
+clf3 = linear_model.LogisticRegression()
+
+# Define classifier, test size, etc.
+clf = clf3
+
+for ts in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
+
+    print 'Test size: '+str(ts)
+
+    print 'No SMOTE.'
+    print ' '
+
+    TP, FP, FN, TN = 0, 0, 0, 0
+    # Imbalanced learning, not using SMOTE
+    x_array = np.array(x)
+    y_array = np.array(y)
+    usx = x_array
+    usy = y_array
+    x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = ts)#test_size: proportion of train/test data
+    clf.fit(x_train, y_train)
+    y_predict = clf.predict(x_test)
+    for i in xrange(len(y_predict)):
+        if y_test[i]==1 and y_predict[i]==1:
+            TP += 1
+        if y_test[i]==0 and y_predict[i]==1:
+            FP += 1
+        if y_test[i]==1 and y_predict[i]==0:
+            FN += 1
+        if y_test[i]==0 and y_predict[i]==0:
+            TN += 1
+
+    printAll(TP, FP, FN, TN)
+
+    #print confusion_matrix(y_test, answear) watch out the element in confusion matrix
+    precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
+    predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
+
+    # Reset TP, FP, TN, FN
+    TP, FP, FN, TN = 0, 0, 0, 0
+    print 'With SMOTE.'
+    print ' '
+
+    # Balanced learning, using SMOTE
+    x_array = np.array(x)
+    y_array = np.array(y)
+    usx, usy = SMOTE().fit_sample(x_array, y_array)
+    x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = ts)#test_size: proportion of train/test data
+    clf.fit(x_train, y_train)
+    y_predict = clf.predict(x_test)
+    for i in xrange(len(y_predict)):
+        if y_test[i]==1 and y_predict[i]==1:
+            TP += 1
+        if y_test[i]==0 and y_predict[i]==1:
+            FP += 1
+        if y_test[i]==1 and y_predict[i]==0:
+            FN += 1
+        if y_test[i]==0 and y_predict[i]==0:
+            TN += 1
+
+    printAll(TP, FP, FN, TN)
+    #print confusion_matrix(y_test, answear) watch out the element in confusion matrix
+    precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
+    predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
