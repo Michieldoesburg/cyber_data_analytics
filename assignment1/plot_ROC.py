@@ -21,12 +21,13 @@ def addpoints(fpr, tpr):
     return res
 
 
-fpr = [0, 0.1, 0.3, 0.5, 0.7, 0.8, 0.9];
-tpr = [0.3, 0.5, 0.7, 0.75, 0.8, 0.95, 1];
+fpr = [0, 0]
+tpr = [0, 1]
+#fpr = [0, 0.1, 0.3, 0.5, 0.7, 0.8, 0.9];
+#tpr = [0.3, 0.5, 0.7, 0.75, 0.8, 0.95, 1];
 res = addpoints(fpr, tpr)
 fpr = res[0]
 tpr = res[1]
-print res
 roc_auc = auc(fpr, tpr)
 
 plt.figure()

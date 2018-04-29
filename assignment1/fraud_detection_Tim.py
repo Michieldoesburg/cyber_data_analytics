@@ -248,14 +248,20 @@ for i in range(len(x_mean)):
     ch_dfa.flush()
 
 # Several classifiers to be used.
-clf1 = RandomForestClassifier()
-clf2 = neighbors.KNeighborsClassifier(algorithm='kd_tree')
-clf3 = linear_model.LogisticRegression()
+#clf1 = RandomForestClassifier()
+#clf2 = neighbors.KNeighborsClassifier(algorithm='kd_tree')
+#clf3 = linear_model.LogisticRegression()
 
 # Define classifier, test size, etc.
-clf = clf3
+#clf = clf3
 
-for ts in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
+ts = 0.2
+
+for cw in [{0: 1, 1: 1}, {0: 1, 1: 5}, {0: 1, 1: 10}, {0: 1, 1: 25}, {0: 1, 1: 50}, {0: 1, 1: 100}, {0: 1, 1: 250}, {0: 1, 1: 500}, {0: 1, 1: 1000}]:
+    print ' '
+    print 'Weights: 0 = 1, 1 = ' + str(cw[1])
+
+    clf = linear_model.LogisticRegression(class_weight=cw)
 
     print 'Test size: '+str(ts)
     print ' '
@@ -289,6 +295,7 @@ for ts in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
 
     # Reset TP, FP, TN, FN
     TP, FP, FN, TN = 0, 0, 0, 0
+    print ' '
     print 'With SMOTE.'
     print ' '
 
