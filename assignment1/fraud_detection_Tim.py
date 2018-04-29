@@ -258,7 +258,7 @@ clf = clf3
 for ts in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
 
     print 'Test size: '+str(ts)
-
+    print ' '
     print 'No SMOTE.'
     print ' '
 
