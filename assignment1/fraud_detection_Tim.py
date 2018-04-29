@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 from imblearn.over_sampling import SMOTE
 from sklearn import neighbors
 from sklearn import linear_model
-from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import precision_recall_curve, roc_curve, auc
 from sklearn.metrics import classification_report
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import confusion_matrix
@@ -255,68 +255,221 @@ for i in range(len(x_mean)):
 # Define classifier, test size, etc.
 #clf = clf3
 
+def processdata(y_test, predict_proba):
+    fpr, tpr, thres1 = roc_curve(y_test, predict_proba[:, 1])
+    roc_area = auc(fpr, tpr)
+    return fpr, tpr, roc_area
+
+
 ts = 0.2
+cutoff = 0.5
 
-for cw in [{0: 1, 1: 1}, {0: 1, 1: 5}, {0: 1, 1: 10}, {0: 1, 1: 25}, {0: 1, 1: 50}, {0: 1, 1: 100}, {0: 1, 1: 250}, {0: 1, 1: 500}, {0: 1, 1: 1000}]:
-    print ' '
-    print 'Weights: 0 = 1, 1 = ' + str(cw[1])
+#
+#
+# NO SMOTE.
+#
+#
+clf = linear_model.LogisticRegression()
 
-    clf = linear_model.LogisticRegression(class_weight=cw)
+print 'Test size: '+str(ts)
+print ' '
+print 'No SMOTE.'
+print ' '
 
-    print 'Test size: '+str(ts)
-    print ' '
-    print 'No SMOTE.'
-    print ' '
+TP, FP, FN, TN = 0, 0, 0, 0
+# Imbalanced learning, not using SMOTE
+x_array = np.array(x)
+y_array = np.array(y)
+usx = x_array
+usy = y_array
+x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = ts)#test_size: proportion of train/test data
+clf.fit(x_train, y_train)
+y_predict = clf.predict(x_test)
+for i in xrange(len(y_predict)):
+    if y_test[i]==1 and y_predict[i]==1:
+        TP += 1
+    if y_test[i]==0 and y_predict[i]==1:
+        FP += 1
+    if y_test[i]==1 and y_predict[i]==0:
+       FN += 1
+    if y_test[i]==0 and y_predict[i]==0:
+        TN += 1
 
-    TP, FP, FN, TN = 0, 0, 0, 0
-    # Imbalanced learning, not using SMOTE
-    x_array = np.array(x)
-    y_array = np.array(y)
-    usx = x_array
-    usy = y_array
-    x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = ts)#test_size: proportion of train/test data
-    clf.fit(x_train, y_train)
-    y_predict = clf.predict(x_test)
-    for i in xrange(len(y_predict)):
-        if y_test[i]==1 and y_predict[i]==1:
-            TP += 1
-        if y_test[i]==0 and y_predict[i]==1:
-            FP += 1
-        if y_test[i]==1 and y_predict[i]==0:
-            FN += 1
-        if y_test[i]==0 and y_predict[i]==0:
-            TN += 1
+printAll(TP, FP, FN, TN)
 
-    printAll(TP, FP, FN, TN)
+#print confusion_matrix(y_test, answear) watch out the element in confusion matrix
+precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
+predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
+y_predict = (predict_proba[:, 1] > cutoff).astype(int)
+false_positive_rate, true_positive_rate, roc_auc = processdata(y_test, predict_proba)
+plt.figure()
+plt.subplot(1, 2, 1)
+l1, = plt.plot(false_positive_rate, true_positive_rate, 'b', label='Logistic regression, AUC = %0.2f' % roc_auc)
 
-    #print confusion_matrix(y_test, answear) watch out the element in confusion matrix
-    precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
-    predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
+clf = RandomForestClassifier()
 
-    # Reset TP, FP, TN, FN
-    TP, FP, FN, TN = 0, 0, 0, 0
-    print ' '
-    print 'With SMOTE.'
-    print ' '
+print 'Test size: '+str(ts)
+print ' '
+print 'No SMOTE.'
+print ' '
 
-    # Balanced learning, using SMOTE
-    x_array = np.array(x)
-    y_array = np.array(y)
-    usx, usy = SMOTE().fit_sample(x_array, y_array)
-    x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = ts)#test_size: proportion of train/test data
-    clf.fit(x_train, y_train)
-    y_predict = clf.predict(x_test)
-    for i in xrange(len(y_predict)):
-        if y_test[i]==1 and y_predict[i]==1:
-            TP += 1
-        if y_test[i]==0 and y_predict[i]==1:
-            FP += 1
-        if y_test[i]==1 and y_predict[i]==0:
-            FN += 1
-        if y_test[i]==0 and y_predict[i]==0:
-            TN += 1
+TP, FP, FN, TN = 0, 0, 0, 0
+# Imbalanced learning, not using SMOTE
+x_array = np.array(x)
+y_array = np.array(y)
+usx = x_array
+usy = y_array
+x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = ts)#test_size: proportion of train/test data
+clf.fit(x_train, y_train)
+y_predict = clf.predict(x_test)
+for i in xrange(len(y_predict)):
+    if y_test[i]==1 and y_predict[i]==1:
+        TP += 1
+    if y_test[i]==0 and y_predict[i]==1:
+        FP += 1
+    if y_test[i]==1 and y_predict[i]==0:
+       FN += 1
+    if y_test[i]==0 and y_predict[i]==0:
+        TN += 1
 
-    printAll(TP, FP, FN, TN)
-    #print confusion_matrix(y_test, answear) watch out the element in confusion matrix
-    precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
-    predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
+printAll(TP, FP, FN, TN)
+
+#print confusion_matrix(y_test, answear) watch out the element in confusion matrix
+precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
+predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
+y_predict = (predict_proba[:, 1] > cutoff).astype(int)
+false_positive_rate, true_positive_rate, roc_auc = processdata(y_test, predict_proba)
+l2, = plt.plot(false_positive_rate, true_positive_rate, 'r', label='Random forest, AUC = %0.2f' % roc_auc)
+
+clf = neighbors.KNeighborsClassifier(algorithm='kd_tree')
+
+print 'Test size: '+str(ts)
+print ' '
+print 'No SMOTE.'
+print ' '
+
+TP, FP, FN, TN = 0, 0, 0, 0
+# Imbalanced learning, not using SMOTE
+x_array = np.array(x)
+y_array = np.array(y)
+usx = x_array
+usy = y_array
+x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = ts)#test_size: proportion of train/test data
+clf.fit(x_train, y_train)
+y_predict = clf.predict(x_test)
+for i in xrange(len(y_predict)):
+    if y_test[i]==1 and y_predict[i]==1:
+        TP += 1
+    if y_test[i]==0 and y_predict[i]==1:
+        FP += 1
+    if y_test[i]==1 and y_predict[i]==0:
+       FN += 1
+    if y_test[i]==0 and y_predict[i]==0:
+        TN += 1
+
+printAll(TP, FP, FN, TN)
+
+#print confusion_matrix(y_test, answear) watch out the element in confusion matrix
+precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
+predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
+y_predict = (predict_proba[:, 1] > cutoff).astype(int)
+false_positive_rate, true_positive_rate, roc_auc = processdata(y_test, predict_proba)
+l3, = plt.plot(false_positive_rate, true_positive_rate, 'g', label='5-NN, AUC = %0.2f' % roc_auc)
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.legend(handles=[l1, l2, l3])
+plt.title('ROC Curve, no SMOTE')
+
+# Reset TP, FP, TN, FN
+TP, FP, FN, TN = 0, 0, 0, 0
+print ' '
+print 'With SMOTE.'
+print ' '
+
+clf = linear_model.LogisticRegression()
+
+# Balanced learning, using SMOTE
+x_array = np.array(x)
+y_array = np.array(y)
+usx, usy = SMOTE().fit_sample(x_array, y_array)
+x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = ts)#test_size: proportion of train/test data
+clf.fit(x_train, y_train)
+y_predict = clf.predict(x_test)
+for i in xrange(len(y_predict)):
+    if y_test[i]==1 and y_predict[i]==1:
+        TP += 1
+    if y_test[i]==0 and y_predict[i]==1:
+        FP += 1
+    if y_test[i]==1 and y_predict[i]==0:
+        FN += 1
+    if y_test[i]==0 and y_predict[i]==0:
+        TN += 1
+
+printAll(TP, FP, FN, TN)
+#print confusion_matrix(y_test, answear) watch out the element in confusion matrix
+precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
+predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
+y_predict = (predict_proba[:, 1] > cutoff).astype(int)
+false_positive_rate, true_positive_rate, roc_auc = processdata(y_test, predict_proba)
+plt.subplot(1, 2, 2)
+l1, = plt.plot(false_positive_rate, true_positive_rate, 'b', label='Logistic regression, AUC = %0.2f' % roc_auc)
+
+clf = RandomForestClassifier()
+
+# Balanced learning, using SMOTE
+x_array = np.array(x)
+y_array = np.array(y)
+usx, usy = SMOTE().fit_sample(x_array, y_array)
+x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = ts)#test_size: proportion of train/test data
+clf.fit(x_train, y_train)
+y_predict = clf.predict(x_test)
+for i in xrange(len(y_predict)):
+    if y_test[i]==1 and y_predict[i]==1:
+        TP += 1
+    if y_test[i]==0 and y_predict[i]==1:
+        FP += 1
+    if y_test[i]==1 and y_predict[i]==0:
+        FN += 1
+    if y_test[i]==0 and y_predict[i]==0:
+        TN += 1
+
+printAll(TP, FP, FN, TN)
+#print confusion_matrix(y_test, answear) watch out the element in confusion matrix
+precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
+predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
+y_predict = (predict_proba[:, 1] > cutoff).astype(int)
+false_positive_rate, true_positive_rate, roc_auc = processdata(y_test, predict_proba)
+l2, = plt.plot(false_positive_rate, true_positive_rate, 'r', label='Random forest, AUC = %0.2f' % roc_auc)
+
+clf = neighbors.KNeighborsClassifier(algorithm='kd_tree')
+
+# Balanced learning, using SMOTE
+x_array = np.array(x)
+y_array = np.array(y)
+usx, usy = SMOTE().fit_sample(x_array, y_array)
+x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = ts)#test_size: proportion of train/test data
+clf.fit(x_train, y_train)
+y_predict = clf.predict(x_test)
+for i in xrange(len(y_predict)):
+    if y_test[i]==1 and y_predict[i]==1:
+        TP += 1
+    if y_test[i]==0 and y_predict[i]==1:
+        FP += 1
+    if y_test[i]==1 and y_predict[i]==0:
+        FN += 1
+    if y_test[i]==0 and y_predict[i]==0:
+        TN += 1
+
+printAll(TP, FP, FN, TN)
+#print confusion_matrix(y_test, answear) watch out the element in confusion matrix
+precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
+predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
+y_predict = (predict_proba[:, 1] > cutoff).astype(int)
+false_positive_rate, true_positive_rate, roc_auc = processdata(y_test, predict_proba)
+l3, = plt.plot(false_positive_rate, true_positive_rate, 'g', label='5-NN, AUC = %0.2f' % roc_auc)
+
+plt.legend(handles=[l1, l2, l3])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve, with SMOTE')
+plt.show()
