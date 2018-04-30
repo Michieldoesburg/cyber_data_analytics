@@ -3,10 +3,12 @@ import matplotlib.pyplot as plt
 import pylab
 from random import randint
 
+
 data = []
 fraud_data = []
 non_fraud_data = []
 currency_codes = set()
+
 
 with open('data_for_student_case.csv', 'rb') as csvfile:
     reader = csv.reader(csvfile, delimiter=',', quotechar='|')
