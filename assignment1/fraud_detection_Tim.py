@@ -23,8 +23,10 @@
 import datetime
 import time
 import matplotlib.pyplot as plt
+from imblearn.over_sampling import SMOTE
 from sklearn import neighbors
-from sklearn.metrics import precision_recall_curve
+from sklearn import linear_model
+from sklearn.metrics import precision_recall_curve, roc_curve, auc
 from sklearn.metrics import classification_report
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import confusion_matrix
@@ -211,6 +213,21 @@ for item in x:
     item[7] = verification_dict[item[7]]
     item[10] = accountcode_dict[item[10]]
 
+def printAll(TP, FP, FN, TN):
+    print 'TP: ' + str(TP)
+    print 'FP: ' + str(FP)
+    print 'FN: ' + str(FN)
+    print 'TN: ' + str(TN)
+    if TP + FP > 0:
+        print 'TPR: ' + str(float(TP) / (float(TP) + float(FP)))
+    else:
+        print 'TPR is undefined.'
+
+    if FP + TN > 0:
+        print 'FPR: ' + str(float(FP) / (float(FP) + float(TN)))
+    else:
+        print 'FPR is undefined.'
+
 #x_mean = []
 #x_mean = aggregate_mean(x);
 x_mean = x;
@@ -229,30 +246,109 @@ for i in range(len(x_mean)):
     ch_dfa.write('\n')
     sentence=[]
     ch_dfa.flush()
-TP, FP, FN, TN = 0, 0, 0, 0
-x_array = np.array(x)
-y_array = np.array(y)
-usx = x_array
-usy = y_array
-x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = 0.2)#test_size: proportion of train/test data
-#clf = neighbors.KNeighborsClassifier(algorithm = 'kd_tree')
-clf = RandomForestClassifier()
-clf.fit(x_train, y_train)
-y_predict = clf.predict(x_test)
-for i in xrange(len(y_predict)):
-    if y_test[i]==1 and y_predict[i]==1:
-        TP += 1
-    if y_test[i]==0 and y_predict[i]==1:
-        FP += 1
-    if y_test[i]==1 and y_predict[i]==0:
-        FN += 1
-    if y_test[i]==0 and y_predict[i]==0:
-        TN += 1
-print 'TP: '+ str(TP)
-print 'FP: '+ str(FP)
-print 'FN: '+ str(FN)
-print 'TN: '+ str(TN)
-#print confusion_matrix(y_test, answear) watch out the element in confusion matrix
-precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
-predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
 
+# Several classifiers to be used.
+#clf1 = RandomForestClassifier()
+#clf2 = neighbors.KNeighborsClassifier(algorithm='kd_tree')
+#clf3 = linear_model.LogisticRegression()
+
+# Define classifier, test size, etc.
+#clf = clf3
+
+def processdata(y_test, predict_proba):
+    fpr, tpr, thres1 = roc_curve(y_test, predict_proba[:, 1])
+    roc_area = auc(fpr, tpr)
+    return fpr, tpr, roc_area
+
+def classifynosmote(x,y,clf,ts,cutoff,label,color):
+    print 'No SMOTE.'
+    print ' '
+
+    TP, FP, FN, TN = 0, 0, 0, 0
+    # Imbalanced learning, not using SMOTE
+    x_array = np.array(x)
+    y_array = np.array(y)
+    print str(x_array.size)
+    usx = x_array
+    usy = y_array
+    x_train, x_test, y_train, y_test = train_test_split(usx, usy,
+                                                        test_size=ts)  # test_size: proportion of train/test data
+    clf.fit(x_train, y_train)
+    y_predict = clf.predict(x_test)
+    for i in xrange(len(y_predict)):
+        if y_test[i] == 1 and y_predict[i] == 1:
+            TP += 1
+        if y_test[i] == 0 and y_predict[i] == 1:
+            FP += 1
+        if y_test[i] == 1 and y_predict[i] == 0:
+            FN += 1
+        if y_test[i] == 0 and y_predict[i] == 0:
+            TN += 1
+
+    printAll(TP, FP, FN, TN)
+
+    predict_proba = clf.predict_proba(x_test)  # the probability of each smple labelled to positive or negative
+    y_predict = (predict_proba[:, 1] > cutoff).astype(int)
+    false_positive_rate, true_positive_rate, roc_auc = processdata(y_test, predict_proba)
+    handle, = plt.plot(false_positive_rate, true_positive_rate, color, label='%s, AUC = %0.2f' % (label, roc_auc))
+    return handle
+
+def classifywithsmote(x,y,clf,ts,cutoff,label,color):
+    # Reset TP, FP, TN, FN
+    TP, FP, FN, TN = 0, 0, 0, 0
+    print ' '
+    print 'With SMOTE.'
+    print ' '
+    # Balanced learning, using SMOTE
+    x_array = np.array(x)
+    y_array = np.array(y)
+    print str(x_array.size)
+    usx, usy = SMOTE().fit_sample(x_array, y_array)
+    x_train, x_test, y_train, y_test = train_test_split(usx, usy,
+                                                        test_size=ts)  # test_size: proportion of train/test data
+    clf.fit(x_train, y_train)
+    y_predict = clf.predict(x_test)
+    for i in xrange(len(y_predict)):
+        if y_test[i] == 1 and y_predict[i] == 1:
+            TP += 1
+        if y_test[i] == 0 and y_predict[i] == 1:
+            FP += 1
+        if y_test[i] == 1 and y_predict[i] == 0:
+            FN += 1
+        if y_test[i] == 0 and y_predict[i] == 0:
+            TN += 1
+
+    printAll(TP, FP, FN, TN)
+    predict_proba = clf.predict_proba(x_test)  # the probability of each smple labelled to positive or negative
+    y_predict = (predict_proba[:, 1] > cutoff).astype(int)
+    false_positive_rate, true_positive_rate, roc_auc = processdata(y_test, predict_proba)
+    handle, = plt.plot(false_positive_rate, true_positive_rate, color, label='%s, AUC = %0.2f' % (label, roc_auc))
+    return handle
+
+ts = 0.2
+cutoff = 0.5
+
+#
+#
+# NO SMOTE.
+#
+#
+plt.figure()
+plt.subplot(1, 2, 1)
+l1 = classifynosmote(x,y,linear_model.LogisticRegression(),ts,cutoff,'Logistic regression','b')
+l2 = classifynosmote(x,y,RandomForestClassifier(),ts,cutoff,'Random forest','r')
+l3 = classifynosmote(x,y,neighbors.KNeighborsClassifier(algorithm='kd_tree'),ts,cutoff,'5-NN','g')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.legend(handles=[l1, l2, l3])
+plt.title('ROC Curve, no SMOTE')
+
+plt.subplot(1, 2, 2)
+l4 = classifywithsmote(x,y,linear_model.LogisticRegression(),ts,cutoff,'Logistic regression','b')
+l5 = classifywithsmote(x,y,RandomForestClassifier(),ts,cutoff,'Random forest','r')
+l6 = classifywithsmote(x,y,neighbors.KNeighborsClassifier(algorithm='kd_tree'),ts,cutoff,'5-NN','g')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.legend(handles=[l4, l5, l6])
+plt.title('ROC Curve, with SMOTE')
+plt.show()
