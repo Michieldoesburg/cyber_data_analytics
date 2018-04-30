@@ -25,4 +25,11 @@ Because we used Python for this assignment with \texttt{scikit-learn}, we used S
 	\includegraphics[scale = 0.3]{Visualizations/ROC_curves}
 	\caption{Caption of ROC curves.}
 \end{figure}
+\clearpage
+\section{The black box and white box classifier}
+For the white box classifier, we will use the following decision rules to determine whether or not a transaction is fraudulent:
+\begin{itemize}
+	\item The transaction originates from either Mexico or Australia (as these two countries have about two-third of the total fraudulent transactions).
+	\item In the case of Australia, for a transaction to be classified as fraudulent, the currency used must be the Australian dollar, the the card verification code must be supplied, the amount spent must be between 250 AUD and 350 AUD, the interaction should be via E-commerce, and the CVC response code should be 0.
+\end{itemize}
 \end{document}
