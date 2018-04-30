@@ -23,15 +23,28 @@
 import datetime
 import time
 import matplotlib.pyplot as plt
-from sklearn import neighbors
 from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import classification_report
 from sklearn.cross_validation import train_test_split
-from sklearn.metrics import confusion_matrix
 from operator import itemgetter
 from itertools import groupby
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
+
+def convertcurrency(amount,currency_code):
+    # 25 april / 2018 exchange rates
+    if currency_code == "AUD":
+        res = 0.62 * amount
+    if currency_code == "MXN":
+        res = 0.04 * amount
+    if currency_code == "GBP":
+        res = 1.14 * amount
+    if currency_code == "NZD":
+        res = 0.58 * amount
+    if currency_code == "SEK":
+        res = 0.095 * amount
+    else:
+        res = amount
+    return res
 
 def string_to_timestamp(date_string):#convert time string to float value
     time_stamp = time.strptime(date_string, '%Y-%m-%d %H:%M:%S')
@@ -211,15 +224,25 @@ for item in x:
     item[7] = verification_dict[item[7]]
     item[10] = accountcode_dict[item[10]]
 
-#x_mean = []
-#x_mean = aggregate_mean(x);
+def countall(y_test,y_predict):
+    TP, FP, FN, TN = 0, 0, 0, 0
+    for i in xrange(len(y_predict)):
+        if y_test[i] == 1 and y_predict[i] == 1:
+            TP += 1
+        if y_test[i] == 0 and y_predict[i] == 1:
+            FP += 1
+        if y_test[i] == 1 and y_predict[i] == 0:
+            FN += 1
+        if y_test[i] == 0 and y_predict[i] == 0:
+            TN += 1
+    print 'TP: ' + str(TP)
+    print 'FP: ' + str(FP)
+    print 'FN: ' + str(FN)
+    print 'TN: ' + str(TN)
+
 x_mean = x;
 des = 'original_data.csv'
 ch_dfa = open(des,'w')
-#ch_dfa.write('txid,bookingdate,issuercountrycode,txvariantcode,bin,amount,'+
-#             'currencycode,shoppercountrycode,shopperinteraction,simple_journal,'+
- #            'cardverificationcodesupplied,cvcresponsecode,creationdate,accountcode,mail_id,ip_id,card_id')
-#ch_dfa.write('\n')
 sentence = []
 for i in range(len(x_mean)):
     for j in range(len(x_mean[i])):
@@ -229,29 +252,17 @@ for i in range(len(x_mean)):
     ch_dfa.write('\n')
     sentence=[]
     ch_dfa.flush()
-TP, FP, FN, TN = 0, 0, 0, 0
 x_array = np.array(x)
 y_array = np.array(y)
 usx = x_array
 usy = y_array
 x_train, x_test, y_train, y_test = train_test_split(usx, usy, test_size = 0.2)#test_size: proportion of train/test data
-#clf = neighbors.KNeighborsClassifier(algorithm = 'kd_tree')
 clf = RandomForestClassifier()
 clf.fit(x_train, y_train)
-y_predict = clf.predict(x_test)
-for i in xrange(len(y_predict)):
-    if y_test[i]==1 and y_predict[i]==1:
-        TP += 1
-    if y_test[i]==0 and y_predict[i]==1:
-        FP += 1
-    if y_test[i]==1 and y_predict[i]==0:
-        FN += 1
-    if y_test[i]==0 and y_predict[i]==0:
-        TN += 1
-print 'TP: '+ str(TP)
-print 'FP: '+ str(FP)
-print 'FN: '+ str(FN)
-print 'TN: '+ str(TN)
+y_predict = clf.predict(x_array)
+countall(y_array,y_predict)
+
+
 #print confusion_matrix(y_test, answear) watch out the element in confusion matrix
 precision, recall, thresholds = precision_recall_curve(y_test, y_predict)
 predict_proba = clf.predict_proba(x_test)#the probability of each smple labelled to positive or negative
