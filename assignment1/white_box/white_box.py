@@ -20,17 +20,23 @@ def preProcess(data_entries):
 def classify(data, feature_ranges):
     result = []
 
-    predict_fraud = False
+    predict_fraud = True
 
     for entry in data:
-        if entry.bin in feature_ranges["bin"] and \
-        entry.tx_variant_code in feature_ranges["tx_variant_code"] and \
-        entry.issuer_country_code in feature_ranges["issuer_country_code"] and \
-        entry.card_ver_code_supplied in feature_ranges["card_verification"] and \
-        entry.cvc_response_code in feature_ranges["cvc_response"] and \
-        entry.account_code in feature_ranges["account_code"] and \
-        entry.shopper_interaction in feature_ranges["shopper_interaction"]:
-            predict_fraud = True
+        if not entry.bin in feature_ranges["bin"]:
+            predict_fraud = False
+        if not entry.tx_variant_code in feature_ranges["tx_variant_code"]:
+            predict_fraud = False
+        if not entry.issuer_country_code in feature_ranges["issuer_country_code"]:
+            predict_fraud = False
+        if not entry.card_ver_code_supplied in feature_ranges["card_verification"]:
+            predict_fraud = False
+        if not entry.cvc_response_code in feature_ranges["cvc_response"]:
+            predict_fraud = False
+        if not entry.account_code in feature_ranges["account_code"]:
+            predict_fraud = False
+        if not entry.shopper_interaction in feature_ranges["shopper_interaction"]:
+            predict_fraud = False
 
         result.append((entry.simple_journal, predict_fraud))
 
