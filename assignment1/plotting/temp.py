@@ -10,7 +10,7 @@ non_fraud_data = []
 currency_codes = set()
 
 
-with open('data_for_student_case.csv', 'rb') as csvfile:
+with open('../data_for_student_case.csv', 'rb') as csvfile:
     reader = csv.reader(csvfile, delimiter=',', quotechar='|')
     for row in reader:
         if row[5] == 'amount':
@@ -46,9 +46,10 @@ while(nf_sample_data.__len__() < 345):
 
     nf_sample_data.append(non_fraud_data[index])
 
-plt.scatter([xrange(0, fraud_data.__len__())], fraud_data, c="red")
 #plt.scatter([xrange(0, nf_sample_data.__len__())], nf_sample_data, c="blue")
 plt.scatter([xrange(0, non_fraud_data.__len__())], non_fraud_data, c="blue")
-plt.xlabel('Fraudulent vs non-fraudulent amount in transaction (normalized)')
+plt.scatter([xrange(0, fraud_data.__len__())], fraud_data, c="red")
+
+plt.xlabel('Fraudulent vs non-fraudulent amount in transaction (normalized for currency)')
 
 plt.show()
