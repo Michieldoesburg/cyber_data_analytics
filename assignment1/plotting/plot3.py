@@ -1,12 +1,13 @@
 import csv
 from DataEntry import DataEntry
+import matplotlib.pyplot as plt
+import numpy as np
 
 """
 This file plots the amount of fraud vs non fraud transactions per credit card number and email. 
 """
 
 data_entries = []
-
 def readInData():
     with open('../data_for_student_case.csv', 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -40,5 +41,30 @@ def readInData():
             data_entries.append(data_entry)
 
 readInData()
-for x in xrange(0, 3):
-    print(data_entries[x])
+
+
+num_trans_per_cc_dict = {}
+
+for entry in data_entries:
+    num_trans_per_cc_dict[entry.card_id] = num_trans_per_cc_dict.get(entry.card_id, 0) + 1
+
+data = num_trans_per_cc_dict
+names = list(data.keys())
+values = list(data.values())
+
+X = data.keys()
+X = X[:1000]
+Y = []
+#Z = []]
+
+for x in X:
+    Y.append(data.get(x, 0))
+    #Z.append(data.get(x, 0)[1])
+
+_X = np.arange(len(X))
+
+plt.bar(_X - 0.2, Y, 0.4)
+#plt.bar(_X + 0.2, Z, 0.4)
+plt.xticks(_X, X) # set labels manually
+
+plt.show()
