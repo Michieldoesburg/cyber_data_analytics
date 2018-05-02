@@ -1,4 +1,5 @@
 import read_in_data
+from find_fraud_data_feature_ranges import findFeatureRanges
 
 def preProcess(data_entries):
     """
@@ -16,15 +17,45 @@ def preProcess(data_entries):
 
     return final_list
 
-def classify(data):
+def classify(data, feature_ranges):
     result = []
 
+    predict_fraud = False
+
     for entry in data:
-        actual_chargeback = entry.simple_journal
+        if entry.bin in feature_ranges["bin"] and \
+        entry.tx_variant_code in feature_ranges["tx_variant_code"] and \
+        entry.issuer_country_code in feature_ranges["issuer_country_code"] and \
+        entry.card_ver_code_supplied in feature_ranges["card_verification"] and \
+        entry.cvc_response_code in feature_ranges["cvc_response"] and \
+        entry.account_code in feature_ranges["account_code"] and \
+        entry.shopper_interaction in feature_ranges["shopper_interaction"]:
+            predict_fraud = True
 
-        #if entry.amount < 800 && entry.shopper_country_code == "MX"
+        result.append((entry.simple_journal, predict_fraud))
 
+    return result
 
 unfiltered_data = read_in_data.readInData('data_for_student_case.csv')
 data = preProcess(unfiltered_data)
 
+feature_ranges = findFeatureRanges()
+
+result = classify(data, feature_ranges)
+
+TP, FP, TN, FN = 0, 0, 0, 0
+
+for tuple in result:
+    if tuple[0] == 'Chargeback' and tuple[1] == True:
+        TP += 1
+    if tuple[0] == 'Settled' and tuple[1] == True:
+        FP += 1
+    if tuple[0] == 'Chargeback' and tuple[1] == False:
+        FN += 1
+    if tuple[0] == 'Settled' and tuple[1] == False:
+        TN += 1
+
+print("TP: " + str(TP))
+print("FP: " + str(FP))
+print("TN: " + str(TN))
+print("FN: " + str(FN))
