@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import pylab
 from random import randint
 
-
+"""
+This file plots the fraudulent vs non-fraudulent amount in transaction (normalized for currency)
+"""
 data = []
 fraud_data = []
 non_fraud_data = []
@@ -38,16 +40,16 @@ with open('../data_for_student_case.csv', 'rb') as csvfile:
 
         if simple_journal != 'Chargeback':
             non_fraud_data.append(amount)
-            if id in non_fraud_all:
-                non_fraud_all[id] = [amount]
-            else:
-                non_fraud_all[id] = non_fraud_all[id].append(amount)
+            #if id in non_fraud_all:
+             #   non_fraud_all[id] = [amount]
+            #else:
+            #    non_fraud_all[id] = non_fraud_all[id].append(amount)
         if simple_journal == 'Chargeback':
             fraud_data.append(amount)
-            if id in fraud_all:
-                fraud_all[id] = [amount]
-            else:
-                fraud_all[id] = fraud_all[id].append(amount)
+            #if id in fraud_all:
+            #    fraud_all[id] = [amount]
+            #else:
+            #    fraud_all[id] = fraud_all[id].append(amount)
 
 
 nf_sample_data = []

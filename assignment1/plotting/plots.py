@@ -2,7 +2,9 @@ import csv
 from collections import Counter
 import matplotlib.pyplot as plt
 import numpy as np
-
+"""
+This file plots the percentage of non-fraudulent vs percentage of fraudulent transactions per issuer.
+"""
 counts = {}
 nf_counts = {}
 num_fraud = 0.0
