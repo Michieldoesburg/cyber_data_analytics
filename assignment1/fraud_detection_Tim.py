@@ -28,6 +28,7 @@ from sklearn import neighbors
 from sklearn import linear_model
 from sklearn.metrics import precision_recall_curve, roc_curve, auc
 from sklearn.metrics import classification_report
+from sklearn.model_selection import KFold
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import confusion_matrix
 from operator import itemgetter
@@ -301,9 +302,12 @@ def classifywithsmote(x,y,clf,ts,cutoff,label,color):
     # Balanced learning, using SMOTE
     x_array = np.array(x)
     y_array = np.array(y)
-    usx, usy = SMOTE().fit_sample(x_array, y_array)
+    usx = x_array
+    usy = y_array
+    #usx, usy = SMOTE().fit_sample(x_array, y_array)
     x_train, x_test, y_train, y_test = train_test_split(usx, usy,
                                                         test_size=ts)  # test_size: proportion of train/test data
+    x_train, y_train = SMOTE().fit_sample(x_train, y_train)
     clf.fit(x_train, y_train)
     y_predict = clf.predict(x_test)
     for i in xrange(len(y_predict)):
@@ -325,6 +329,37 @@ def classifywithsmote(x,y,clf,ts,cutoff,label,color):
 
 ts = 0.2
 cutoff = 0.5
+
+def kfoldcrossval(x,y,clf,cvs):
+    # Reset TP, FP, TN, FN
+    TP, FP, FN, TN = 0, 0, 0, 0
+    # Balanced learning, using SMOTE
+    x_array = np.array(x)
+    y_array = np.array(y)
+
+    index = 0
+
+    kf = KFold(n_splits=cvs)
+    for train, test in kf.split(x):
+        print 'Split: ' + str(index)
+        index = index + 1
+        x_train, y_train = [x_array[i] for i in train], [y_array[i] for i in train]
+        x_test, y_test = [x_array[i] for i in test], [y_array[i] for i in test]
+        x_train, y_train = SMOTE().fit_sample(x_train, y_train)
+
+        clf.fit(x_train, y_train)
+        y_predict = clf.predict(x_test)
+        for i in xrange(len(y_predict)):
+            if y_test[i] == 1 and y_predict[i] == 1:
+                TP += 1
+            if y_test[i] == 0 and y_predict[i] == 1:
+                FP += 1
+            if y_test[i] == 1 and y_predict[i] == 0:
+                FN += 1
+            if y_test[i] == 0 and y_predict[i] == 0:
+                TN += 1
+
+    printAll(TP, FP, FN, TN)
 
 #
 #
@@ -349,4 +384,7 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.legend(handles=[l4, l5, l6])
 plt.title('ROC Curve, with SMOTE')
+
+kfoldcrossval(x,y,RandomForestClassifier(),10)
+
 plt.show()
