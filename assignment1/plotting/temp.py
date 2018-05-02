@@ -7,6 +7,8 @@ from random import randint
 data = []
 fraud_data = []
 non_fraud_data = []
+fraud_all = {}
+non_fraud_all = {}
 currency_codes = set()
 
 
@@ -20,6 +22,7 @@ with open('../data_for_student_case.csv', 'rb') as csvfile:
         amount = float(row[5])
         currency_code = row[6]
         simple_journal = row[9]
+        id = row[15]
 
         # 25 april / 2018 exchange rates
         if currency_code == "AUD":
@@ -35,10 +38,27 @@ with open('../data_for_student_case.csv', 'rb') as csvfile:
 
         if simple_journal != 'Chargeback':
             non_fraud_data.append(amount)
+            if id in non_fraud_all:
+                non_fraud_all[id] = [amount]
+            else:
+                non_fraud_all[id] = non_fraud_all[id].append(amount)
         if simple_journal == 'Chargeback':
             fraud_data.append(amount)
+            if id in fraud_all:
+                fraud_all[id] = [amount]
+            else:
+                fraud_all[id] = fraud_all[id].append(amount)
+
 
 nf_sample_data = []
+
+non_fraud_avg = {}
+fraud_avg = {}
+for i in fraud_all:
+    fraud_list = fraud_all[i]
+    fraud_avg = sum(fraud_list)/float(len(fraud_list))
+    non_fraud_list = non_fraud_all[i]
+    non_fraud_avg = sum(non_fraud_list)/float(len(non_fraud_list))
 
 while(nf_sample_data.__len__() < 345):
 

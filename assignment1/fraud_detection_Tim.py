@@ -268,7 +268,6 @@ def classifynosmote(x,y,clf,ts,cutoff,label,color):
     # Imbalanced learning, not using SMOTE
     x_array = np.array(x)
     y_array = np.array(y)
-    print str(x_array.size)
     usx = x_array
     usy = y_array
     x_train, x_test, y_train, y_test = train_test_split(usx, usy,
@@ -302,7 +301,6 @@ def classifywithsmote(x,y,clf,ts,cutoff,label,color):
     # Balanced learning, using SMOTE
     x_array = np.array(x)
     y_array = np.array(y)
-    print str(x_array.size)
     usx, usy = SMOTE().fit_sample(x_array, y_array)
     x_train, x_test, y_train, y_test = train_test_split(usx, usy,
                                                         test_size=ts)  # test_size: proportion of train/test data
