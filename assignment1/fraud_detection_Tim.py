@@ -31,6 +31,7 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import KFold
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import confusion_matrix
+from currency import currency
 from operator import itemgetter
 from itertools import groupby
 from sklearn.ensemble import RandomForestClassifier
@@ -124,6 +125,8 @@ if __name__ == "__main__":
         amount = float(line_ah.strip().split(',')[5])#transaction amount in minor units
         currencycode = line_ah.strip().split(',')[6]
         currencycode_set.add(currencycode)
+        # Was used for normalizing currency, does not work as well as we thought.
+        # amount = currency(amount, currencycode)
         shoppercountry = line_ah.strip().split(',')[7]#country code
         shoppercountry_set.add(shoppercountry)
         interaction = line_ah.strip().split(',')[8]#online transaction or subscription
