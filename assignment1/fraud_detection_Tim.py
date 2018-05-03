@@ -402,7 +402,5 @@ plt.legend(handles=[l4, l5, l6])
 plt.title('ROC Curve, with SMOTE')
 
 kfoldcrossval(x,y,RandomForestClassifier(),10)
-print np.mean(scores['test_precision_macro'])
-print np.mean(scores['test_recall_macro'])
 
 plt.show()
