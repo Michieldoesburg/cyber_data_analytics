@@ -45,10 +45,25 @@ FN: 190 \newline
 \end{flushleft}
 
 \subsection{The black box classifier}
-For the black box classifier, we will be using the random forest classifier, as this classifier tended to perform better, especially on SMOTEd data. It is also a classifier that has been shown to perform better in the papers. TODO performance.
+For the black box classifier, we will be using the random forest classifier, as this classifier tended to perform better, especially on SMOTEd data. It is also a classifier that has been shown to perform better in the papers (TODO ref). In order to train and test this classifier on the data, we will be using ten-fold cross validation, to get a clear picture of how this classifier would perform in practice. We will also be using SMOTE to balance the training data for every round. The performance for this approach is as follows:
 
+\begin{flushleft}
+	TP: 23 \newline
+	FP: 157  \newline
+	TN: 236196 \newline
+	FN: 322 \newline
+\end{flushleft}
 \subsection{Performance and evaluation}
 The performance of the black box algorithm is slightly worse than the performance of the white box algorithm, but the white box algorithm is also very simple, and an adversary only has to commit fraud using a different card (that has not been used in a fraudulent transaction before) to prevent being detected. As such, we predict that the white box algorithm will perform very poorly in practice. Contrasting this, the black box algorithm will most likely also perform well in practice, as we do not assume anything about the fraudulent transactions.
 \section{Bonus task}
-As a way to improve our classifier even further, we tried to convert all the money spent in the transactions to Euros, using the exchange rates, once again, from April 25, 2018. 
+As a way to improve our classifier even further, we tried to convert all the money spent in the transactions to Euros, using the exchange rates, once again, from April 25, 2018. TODO results.
+
+Another thing what we did is not using SMOTE to balance training data while testing the performance of the random forest classifier using ten-fold cross-validation. This resulted in the following performance:
+\begin{flushleft}
+	TP: 3 \newline
+	FP: 5  \newline
+	TN: 236348 \newline
+	FN: 342 \newline
+\end{flushleft}
+Interestingly, not using SMOTE results in a far lower false positive rate, which is the main performance metric that we are interested in for developing fraud detection systems. But it should be noted that not using SMOTE causes the random forest classifier to miss a lot more cases as well.
 \end{document}
