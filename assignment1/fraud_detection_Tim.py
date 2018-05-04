@@ -219,6 +219,7 @@ for item in x:
     item[10] = accountcode_dict[item[10]]
 
 def printAll(TP, FP, FN, TN):
+    # Print TP, FP, FN, TN, TPR and FPR.
     print 'TP: ' + str(TP)
     print 'FP: ' + str(FP)
     print 'FN: ' + str(FN)
@@ -252,23 +253,13 @@ for i in range(len(x_mean)):
     sentence=[]
     ch_dfa.flush()
 
-# Several classifiers to be used.
-#clf1 = RandomForestClassifier()
-#clf2 = neighbors.KNeighborsClassifier(algorithm='kd_tree')
-#clf3 = linear_model.LogisticRegression()
-
-# Define classifier, test size, etc.
-#clf = clf3
-
 def processdata(y_test, predict_proba):
+    # Small function that calculates the FPR, TPR, and AuC for a given set of predictions and a set of the prob. of a sample being labeled positive or negative.
     fpr, tpr, thres1 = roc_curve(y_test, predict_proba[:, 1])
     roc_area = auc(fpr, tpr)
     return fpr, tpr, roc_area
 
 def classifynosmote(x,y,clf,ts,cutoff,label,color):
-    print 'No SMOTE.'
-    print ' '
-
     TP, FP, FN, TN = 0, 0, 0, 0
     # Imbalanced learning, not using SMOTE
     x_array = np.array(x)
@@ -300,15 +291,11 @@ def classifynosmote(x,y,clf,ts,cutoff,label,color):
 def classifywithsmote(x,y,clf,ts,cutoff,label,color):
     # Reset TP, FP, TN, FN
     TP, FP, FN, TN = 0, 0, 0, 0
-    print ' '
-    print 'With SMOTE.'
-    print ' '
     # Balanced learning, using SMOTE
     x_array = np.array(x)
     y_array = np.array(y)
     usx = x_array
     usy = y_array
-    #usx, usy = SMOTE().fit_sample(x_array, y_array)
     x_train, x_test, y_train, y_test = train_test_split(usx, usy,
                                                         test_size=ts)  # test_size: proportion of train/test data
     x_train, y_train = SMOTE().fit_sample(x_train, y_train)
@@ -331,17 +318,6 @@ def classifywithsmote(x,y,clf,ts,cutoff,label,color):
     handle, = plt.plot(false_positive_rate, true_positive_rate, color, label='%s, AUC = %0.2f' % (label, roc_auc))
     return handle
 
-def crossvalidate(x,y,clf,cvs):
-    # Cross validation
-    sc = ['precision_macro', 'recall_macro']
-    x_array = np.array(x)
-    y_array = np.array(y)
-    usx = x_array
-    usy = y_array
-    #usx, usy = SMOTE().fit_sample(x_array, y_array)
-    scores = cross_validate(clf, usx, usy, cv=cvs, scoring=sc, return_train_score=False)
-    return scores
-
 
 ts = 0.2
 cutoff = 0.5
@@ -349,7 +325,6 @@ cutoff = 0.5
 def kfoldcrossval(x,y,clf,cvs):
     # Reset TP, FP, TN, FN
     TP, FP, FN, TN = 0, 0, 0, 0
-    # Balanced learning, using SMOTE
     x_array = np.array(x)
     y_array = np.array(y)
 
@@ -357,6 +332,7 @@ def kfoldcrossval(x,y,clf,cvs):
 
     kf = KFold(n_splits=cvs)
     for train, test in kf.split(x):
+        # Keep track of the splits.
         print 'Split: ' + str(index)
         index = index + 1
         x_train, y_train = [x_array[i] for i in train], [y_array[i] for i in train]
@@ -377,13 +353,10 @@ def kfoldcrossval(x,y,clf,cvs):
 
     printAll(TP, FP, FN, TN)
 
-#
-#
-# NO SMOTE.
-#
-#
+# Main code for all plots.
 plt.figure()
 plt.subplot(1, 2, 1)
+# Plot ROC curves of the logistic classifier, the random forest classifier, and the 5-NN classifier, without the usage of SMOTE.
 l1 = classifynosmote(x,y,linear_model.LogisticRegression(),ts,cutoff,'Logistic regression','b')
 l2 = classifynosmote(x,y,RandomForestClassifier(),ts,cutoff,'Random forest','r')
 l3 = classifynosmote(x,y,neighbors.KNeighborsClassifier(algorithm='kd_tree'),ts,cutoff,'5-NN','g')
@@ -393,6 +366,7 @@ plt.legend(handles=[l1, l2, l3])
 plt.title('ROC Curve, no SMOTE')
 
 plt.subplot(1, 2, 2)
+# Plot ROC curves of the logistic classifier, the random forest classifier, and the 5-NN classifier, with the usage of SMOTE.
 l4 = classifywithsmote(x,y,linear_model.LogisticRegression(),ts,cutoff,'Logistic regression','b')
 l5 = classifywithsmote(x,y,RandomForestClassifier(),ts,cutoff,'Random forest','r')
 l6 = classifywithsmote(x,y,neighbors.KNeighborsClassifier(algorithm='kd_tree'),ts,cutoff,'5-NN','g')
@@ -401,6 +375,7 @@ plt.ylabel('True Positive Rate')
 plt.legend(handles=[l4, l5, l6])
 plt.title('ROC Curve, with SMOTE')
 
+# Evaluate the random forest classifier with 10-fold cross validation, using SMOTE on training data.
 kfoldcrossval(x,y,RandomForestClassifier(),10)
 
 plt.show()
