@@ -11,10 +11,10 @@
 \maketitle
 
 \section{A visualization of the data}
-For the visualization part of this assignment, we first started out by making bar plots of different kinds, but eventually settled  for the scatterplot as seen in figure 1. This scatterplot uses the amount of Eurocent spent per transaction, to allow for better comparisons to be made, as there were five different currencies in the dataset. Exchange rates of April 25, 2018 were used. As can be seen from the scatterplot, there are basically no fraudulent transactions where more than 800 Euro was spent, while there are benign transactions where more than 800 Euro was spent. Also, there are significantly more fraudulent transactions originating from Mexico and Australia than there are from the rest of the world. 
+For the visualization part of this assignment, we first started out by making bar plots of different kinds, but eventually settled  for the scatterplot as seen in figure 1. This scatterplot uses the amount of Eurocent spent per transaction, to allow for better comparisons to be made, as there were five different currencies in the dataset. Exchange rates of April 25, 2018 were used. As can be seen from the scatterplot, there are basically no fraudulent transactions where more than 800 Euro was spent, while there are many benign transactions where more than 800 Euro was spent. Other visualizations we made included the ratio of fraudulent versus non-fraudulent transactions per country and per card issuer. Notable observations were that most nearly all fraudulent transactions come from Mexico and Australia (nearly 90 percent), while these two countries are responsible for very few non-fraudulent transactions. McCredit is responsible for significantly more fraudulent transactions than non-fraudulent. The inverse being true for visadebit, which accounts for roughly 60 percent of benign transactions, yet only 10 percent of fraudulent ones.
 \begin{figure}[h!]
 	\centering
-	\includegraphics[scale = 0.25]{Visualizations/fraud_vs_nonfraud_better}
+	\includegraphics[width=10cm,height=4cm]{Visualizations/AmtFraudvsNonFraud2.png}
 	\caption{A scatterplot of the amount of money spent in the sampled transactions. A red dot indicates a fraudulent transaction (these are only at the very left of the plot due to very little fraudulent transactions existing), while a blue dot indicates a benign transaction.}
 \end{figure}
 \clearpage
@@ -33,6 +33,15 @@ The classifiers that we used were the random forest classifier, the 5-NN classif
 \end{figure}
 \clearpage
 \section{The black box and white box classifier}
+For the white box classifier we took a look at several features of the data: issuer country code; transaction variant code, shopper interaction, card verification, cvc response, account code and card issuer identifier. We wrote a small script which, for the fraudulent transactions only, gathered the ranges of values that these features take. Our classifier works quite simply: if for each feature there is a fraudulent transaction which has the same value as a transaction, that transaction is labelled as fraudulent. Althouth this is a very rough approach, it seems to work quite well on the test data. This approach produces the following results:
+
+\begin{flushleft}
+TP: 155 \newline
+FP: 5  \newline
+TN: 236686 \newline
+FN: 190 \newline
+\end{flushleft}
+
 For the white box classifier, we will use the following decision rules to determine whether or not a transaction is fraudulent:
 \begin{itemize}
 	\item The transaction originates from either Mexico or Australia (as these two countries have about two-third of the total fraudulent transactions).
