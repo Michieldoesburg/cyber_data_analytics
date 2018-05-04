@@ -29,6 +29,7 @@ from sklearn import linear_model
 from sklearn.metrics import precision_recall_curve, roc_curve, auc
 from sklearn.metrics import classification_report
 from sklearn.model_selection import KFold
+from sklearn.model_selection import cross_validate
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import confusion_matrix
 from currency import currency
@@ -329,6 +330,18 @@ def classifywithsmote(x,y,clf,ts,cutoff,label,color):
     false_positive_rate, true_positive_rate, roc_auc = processdata(y_test, predict_proba)
     handle, = plt.plot(false_positive_rate, true_positive_rate, color, label='%s, AUC = %0.2f' % (label, roc_auc))
     return handle
+
+def crossvalidate(x,y,clf,cvs):
+    # Cross validation
+    sc = ['precision_macro', 'recall_macro']
+    x_array = np.array(x)
+    y_array = np.array(y)
+    usx = x_array
+    usy = y_array
+    #usx, usy = SMOTE().fit_sample(x_array, y_array)
+    scores = cross_validate(clf, usx, usy, cv=cvs, scoring=sc, return_train_score=False)
+    return scores
+
 
 ts = 0.2
 cutoff = 0.5
