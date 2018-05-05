@@ -57,8 +57,15 @@ For the black box classifier, we will be using the random forest classifier, as 
 The performance of the black box algorithm is slightly worse than the performance of the white box algorithm, but the white box algorithm is also very simple, and an adversary only has to commit fraud using a different card (that has not been used in a fraudulent transaction before) to prevent being detected. Another way to bypass detection would be to commit fraud outside of Mexico, Australia and the United Kingdom as the white box classifier does not check if transactions from other countries are fraudulent. As such, we predict that the white box algorithm will perform very poorly in practice. Contrasting this, the black box algorithm will most likely also perform well in practice, as we do not assume anything about the fraudulent transactions.
 \clearpage
 \section{Bonus task}
-As a way to improve our classifier even further, we tried to convert all the money spent in the transactions to Euros, using the exchange rates, once again, from April 25, 2018. TODO results.
-
+As a way to improve our classifier even further, we tried to convert all the money spent in the transactions to Euros, using the exchange rates, once again, from April 25, 2018. This resulted in the following performance:
+\begin{flushleft}
+	TP: 26 \newline
+	FP: 171  \newline
+	TN: 236182 \newline
+	FN: 319 \newline
+\end{flushleft}
+As can be seen, using converted currency amounts resulted in slightly more cases correctly being labelled as fraudulent, but the false positive rate is higher as well, indicating that the performance is actually worse when using converted currency amounts.\\
+\\
 Another thing what we did is not using SMOTE to balance training data while testing the performance of the random forest classifier using ten-fold cross-validation. This resulted in the following performance:
 \begin{flushleft}
 	TP: 3 \newline
@@ -66,7 +73,7 @@ Another thing what we did is not using SMOTE to balance training data while test
 	TN: 236348 \newline
 	FN: 342 \newline
 \end{flushleft}
-Interestingly, not using SMOTE results in a far lower false positive rate, which is the main performance metric that we are interested in for developing fraud detection systems. But it should be noted that not using SMOTE causes the random forest classifier to miss a lot more cases as well.
+Interestingly, not using SMOTE resulted in a far lower false positive rate, which is the main performance metric that we are interested in for developing fraud detection systems. But it should be noted that not using SMOTE causes the random forest classifier to miss a lot more cases as well, and if just false positive rate is considered, we should ideally not have a classifier at all, or one that does not label transactions as fraudulent.
 \clearpage
 \bibliography{bibliography}
 \bibliographystyle{unsrt}

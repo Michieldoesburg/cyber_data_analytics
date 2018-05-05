@@ -337,7 +337,7 @@ def kfoldcrossval(x,y,clf,cvs):
         index = index + 1
         x_train, y_train = [x_array[i] for i in train], [y_array[i] for i in train]
         x_test, y_test = [x_array[i] for i in test], [y_array[i] for i in test]
-        #x_train, y_train = SMOTE().fit_sample(x_train, y_train)
+        x_train, y_train = SMOTE().fit_sample(x_train, y_train)
 
         clf.fit(x_train, y_train)
         y_predict = clf.predict(x_test)
