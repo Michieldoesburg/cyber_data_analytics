@@ -3,9 +3,22 @@ import read_in_data
 
 # Find the highest ratio keys
 def findHighRatioKeys(dict):
+        # As a check, normalize the values first.
+        # Compute total sum of values.
+        sum = 0.0
+        for i in dict.iterkeys():
+            sum += dict[i]
+
+        # Normalize all values by dividing over sum.
+        for i in dict.iterkeys():
+            dict[i] = float(dict[i])/float(sum)
+
         value = 0.0
         keys = []
 
+        # Find the keys for a dictionary that maps strings to numerical values
+        # which, when the values are summed, account for at least 80% of the
+        # total sum of values.
         while (value < 0.8):
             max_key = max(dict.iterkeys(), key=(lambda key: dict[key]))
             keys.append(max_key)
@@ -14,8 +27,9 @@ def findHighRatioKeys(dict):
 
         return keys
 
-
+# Find the values of the features for which there is at least one fraudulent transaction with that value.
 def findFeatureRanges():
+    # This is a special dataset, containing only the cases where simple_journal has the value "Chargeback."
     data = read_in_data.readInData('only_fraud_data.csv')
 
     # Count the number of entries to conver counts to ratios later.
