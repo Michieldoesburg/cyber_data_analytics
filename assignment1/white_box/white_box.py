@@ -1,5 +1,6 @@
 import read_in_data
 from find_fraud_data_feature_ranges import findFeatureRanges
+from assignment1.currency import currency
 
 def preProcess(data_entries):
     """
@@ -36,6 +37,9 @@ def classify(data, feature_ranges):
         if not entry.account_code in feature_ranges["account_code"]:
             predict_fraud = False
         if not entry.shopper_interaction in feature_ranges["shopper_interaction"]:
+            predict_fraud = False
+        amount_in_euros = currency(entry.amount, entry.currency_code)
+        if amount_in_euros > 80000.0:
             predict_fraud = False
 
         result.append((entry.simple_journal, predict_fraud))

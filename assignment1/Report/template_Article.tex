@@ -11,7 +11,7 @@
 \maketitle
 
 \section{A visualization of the data}
-For the visualization part of this assignment, we first started out by making bar plots of different kinds, but eventually settled  for the scatterplot as seen in figure 1. This scatterplot uses the amount of Eurocent spent per transaction, to allow for better comparisons to be made, as there were five different currencies in the dataset. Exchange rates of April 25, 2018 were used. As can be seen from the scatterplot, there are basically no fraudulent transactions where more than 800 Euro was spent, while there are many benign transactions where more than 800 Euro was spent. Other visualizations we made included the ratio of fraudulent versus non-fraudulent transactions per country and per card issuer. Notable observations were that most nearly all fraudulent transactions come from Mexico and Australia (nearly 90 percent), while these two countries are responsible for very few non-fraudulent transactions. McCredit is responsible for significantly more fraudulent transactions than non-fraudulent. The inverse being true for visadebit, which accounts for roughly 60 percent of benign transactions, yet only 10 percent of fraudulent ones.
+For the visualization part of this assignment, we first started out by making bar plots of different kinds, but eventually settled  for the scatterplot as seen in figure 1. This scatterplot uses the amount of Eurocent spent per transaction, to allow for better comparisons to be made, as there were five different currencies in the dataset. Exchange rates of April 25, 2018 were used. As can be seen from the scatterplot, there are basically no fraudulent transactions where more than 800 Euro was spent, while there are many benign transactions where more than 800 Euro was spent. Other visualizations we made included the ratio of fraudulent versus non-fraudulent transactions per country and per card issuer. Notable observations were that most nearly all fraudulent transactions come from Mexico, Australia, the United Kingdom and Sweden (nearly 90 percent of all fraudulent transactions happened in these four countries). McCredit is responsible for significantly more fraudulent transactions than non-fraudulent. The inverse being true for visadebit, which accounts for roughly 60 percent of benign transactions, yet only 10 percent of fraudulent ones.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=10cm,height=4cm]{Visualizations/AmtFraudvsNonFraud2.png}
@@ -28,12 +28,14 @@ Because we used Python for this assignment with \texttt{scikit-learn}, we used S
 The classifiers that we used were the random forest classifier, the 5-NN classifier, and the logistic classifier. These were chosen to represent both linear and non-linear classifiers, as well as parametric and non-parametric classifiers (as NN is deemed a non-parametric classifier). The ROC curves are shown in figure 2.
 \begin{figure}[h!]
 	\centering
-	\includegraphics[scale = 0.25]{Visualizations/ROC_curves}
-	\caption{Caption of ROC curves.}
+	\includegraphics[scale = 0.27]{Visualizations/ROC_curves}
+	\caption{The ROC curves, the one on the left does not use SMOTE to oversample training data, and the one on the left does. As can be seen, the area under the curve (AuC) is slightly higher while using SMOTE on training data. In general, this means that classification is more accurate when using SMOTE.}
 \end{figure}
 \clearpage
 \section{The black box and white box classifier}
-For the white box classifier we took a look at several features of the data: issuer country code; transaction variant code, shopper interaction, card verification, cvc response, account code and card issuer identifier. We wrote a small script which, for the fraudulent transactions only, gathered the ranges of values that these features take. Our classifier works quite simply: if for each feature there is a fraudulent transaction which has the same value as a transaction, that transaction is labelled as fraudulent. Althouth this is a very rough approach, it seems to work quite well on the test data. This approach produces the following results:
+In this section, we will compare a very simple white box classifier that we wrote with a black box classifier for detecting fraudulent cases in the data. We will also discuss the applicability of both methods in practice.
+\subsection{The white box classifier}
+For the white box classifier we took a look at several features of the data: issuer country code, transaction variant code, shopper interaction, card verification, CVC response, account code and card issuer identifier. We wrote a small script which, for the fraudulent transactions only, gathered the ranges of values that these features take. In the case of the issuer country code, only Mexico, Australia and the United Kingdom were included in the range as these three countries make up almost 90\% of all the fraudulent transactions. A transaction $t$ is labelled as fraudulent if for every feature in the set of features that we use (so, issuer country code, transaction variant code, shopper interaction, card verification, CVC response, account code and card issuer identifier), it has a value that matches the value in the set of values that we computed, corresponding to that attribute, and if the amount of money spent in $t$ is less than 800 Euros. The implementation of the white box classifier can be seen in \texttt{white\_box.py}, in the \texttt{white\_box} folder. This folder also contains the other functions that the classifier uses. As this is a white box classifier with simple decision rules, no training will be performed (although one could argue that determining the values of the features selected of the fraudulent cases could technically be seen as learning), and the classifier will classify data directly. Although this is a very simple approach, it seems to work quite well on the test data. This approach produces the following results:
 
 \begin{flushleft}
 TP: 155 \newline
@@ -41,14 +43,38 @@ FP: 5  \newline
 TN: 236686 \newline
 FN: 190 \newline
 \end{flushleft}
+\clearpage
+\subsection{The black box classifier}
+For the black box classifier, we will be using the random forest classifier, as this classifier tended to perform better as seen in the ROC curves of figure 2, especially on SMOTEd data. It is also a classifier that has been shown to perform better in a study done by Bhattacharyya, Jha, Tharakunnel and Westland \cite{bhattacharyya2011data}. In order to train and test this classifier on the data, we will be using ten-fold cross validation, to get a clear picture of how this classifier would perform in practice. We will also be using SMOTE to balance the training data for every round. The performance for this approach is as follows:
 
-For the white box classifier, we will use the following decision rules to determine whether or not a transaction is fraudulent:
-\begin{itemize}
-	\item The transaction originates from either Mexico or Australia (as these two countries have about two-third of the total fraudulent transactions).
-	\item The card issuer identifier is between 401795 and 558320, both inclusive. This is the range in which fraud was detected.
-	\item The card type used was mccredit, visaclassic or visadebit. These three card types are used in about two thirds of the fraud cases.
-	\item In the case of Australia, for a transaction to be classified as fraudulent, the currency used must be the Australian dollar, the merchant's webshop value should be APACAccount, the the card verification code must be supplied, the amount spent must be between 250 AUD and 350 AUD, the interaction should be via E-commerce, and the CVC response code should be 0.
-	\item In the case of Mexico, for a transaction to be classified as fraudulent, the currency used must be the Mexican peso, the merchant's webshop value should be MexicoAccount.
-\end{itemize}
-For the black box classifier, we will be using the random forest classifier, as this classifier tended to perform better, especially on SMOTEd data. It is also a classifier that has been shown to perform better in the papers
+\begin{flushleft}
+	TP: 23 \newline
+	FP: 157  \newline
+	TN: 236196 \newline
+	FN: 322 \newline
+\end{flushleft}
+\subsection{Performance and evaluation}
+The performance of the black box algorithm is slightly worse than the performance of the white box algorithm, but the white box algorithm is also very simple, and an adversary only has to commit fraud using a different card (that has not been used in a fraudulent transaction before) to prevent being detected. Another way to bypass detection would be to commit fraud outside of Mexico, Australia and the United Kingdom as the white box classifier does not check if transactions from other countries are fraudulent. As such, we predict that the white box algorithm will perform very poorly in practice. Contrasting this, the black box algorithm will most likely also perform well in practice, as we do not assume anything about the fraudulent transactions.
+\clearpage
+\section{Bonus task}
+As a way to improve our classifier even further, we tried to convert all the money spent in the transactions to Euros, using the exchange rates, once again, from April 25, 2018. This resulted in the following performance:
+\begin{flushleft}
+	TP: 26 \newline
+	FP: 171  \newline
+	TN: 236182 \newline
+	FN: 319 \newline
+\end{flushleft}
+As can be seen, using converted currency amounts resulted in slightly more cases correctly being labelled as fraudulent, but the false positive rate is higher as well, indicating that the performance is actually worse when using converted currency amounts.\\
+\\
+Another thing what we did is not using SMOTE to balance training data while testing the performance of the random forest classifier using ten-fold cross-validation. This resulted in the following performance:
+\begin{flushleft}
+	TP: 3 \newline
+	FP: 5  \newline
+	TN: 236348 \newline
+	FN: 342 \newline
+\end{flushleft}
+Interestingly, not using SMOTE resulted in a far lower false positive rate, which is the main performance metric that we are interested in for developing fraud detection systems. But it should be noted that not using SMOTE causes the random forest classifier to miss a lot more cases as well, and if just false positive rate is considered, we should ideally not have a classifier at all, or one that does not label transactions as fraudulent.
+\clearpage
+\bibliography{bibliography}
+\bibliographystyle{unsrt}
 \end{document}
