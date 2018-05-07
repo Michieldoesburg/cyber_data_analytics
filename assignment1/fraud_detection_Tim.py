@@ -29,6 +29,7 @@ from sklearn import linear_model
 from sklearn.metrics import precision_recall_curve, roc_curve, auc
 from sklearn.metrics import classification_report
 from sklearn.model_selection import KFold
+from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import cross_validate
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import confusion_matrix
@@ -224,15 +225,7 @@ def printAll(TP, FP, FN, TN):
     print 'FP: ' + str(FP)
     print 'FN: ' + str(FN)
     print 'TN: ' + str(TN)
-    if TP + FP > 0:
-        print 'TPR: ' + str(float(TP) / (float(TP) + float(FP)))
-    else:
-        print 'TPR is undefined.'
 
-    if FP + TN > 0:
-        print 'FPR: ' + str(float(FP) / (float(FP) + float(TN)))
-    else:
-        print 'FPR is undefined.'
 
 #x_mean = []
 #x_mean = aggregate_mean(x);
@@ -321,6 +314,38 @@ def classifywithsmote(x,y,clf,ts,cutoff,label,color):
 
 ts = 0.2
 cutoff = 0.5
+
+def kfoldcrossval_alt(x,y,clf,cvs,cutoff):
+    # Reset TP, FP, TN, FN
+    TP, FP, FN, TN = 0, 0, 0, 0
+    x_array = np.array(x)
+    y_array = np.array(y)
+
+    index = 0
+
+    kf = KFold(n_splits=cvs)
+    for train, test in kf.split(x):
+        # Keep track of the splits.
+        print 'Split: ' + str(index)
+        index = index + 1
+        x_train, y_train = [x_array[i] for i in train], [y_array[i] for i in train]
+        x_test, y_test = [x_array[i] for i in test], [y_array[i] for i in test]
+        x_train, y_train = SMOTE().fit_sample(x_train, y_train)
+
+        clf.fit(x_train, y_train)
+        predict_proba = clf.predict_proba(x_test)  # the probability of each sample labelled to positive or negative
+        y_predict = (predict_proba[:, 1] > cutoff).astype(int)
+        for i in xrange(len(y_predict)):
+            if y_test[i] == 1 and y_predict[i] == 1:
+                TP += 1
+            if y_test[i] == 0 and y_predict[i] == 1:
+                FP += 1
+            if y_test[i] == 1 and y_predict[i] == 0:
+                FN += 1
+            if y_test[i] == 0 and y_predict[i] == 0:
+                TN += 1
+
+    printAll(TP, FP, FN, TN)
 
 def kfoldcrossval(x,y,clf,cvs):
     # Reset TP, FP, TN, FN
