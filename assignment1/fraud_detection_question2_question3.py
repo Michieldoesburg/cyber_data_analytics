@@ -379,27 +379,40 @@ def kfoldcrossval(x,y,clf,cvs):
     printAll(TP, FP, FN, TN)
 
 # Main code for all plots.
+
+l0, = plt.plot([0, 1], [0, 1], 'k', label='Reference curve', linestyle='--')
+
+print 'Question 2: ROC curves with and without SMOTE'
 plt.figure()
 plt.subplot(1, 2, 1)
 # Plot ROC curves of the logistic classifier, the random forest classifier, and the 5-NN classifier, without the usage of SMOTE.
+print 'No SMOTE'
+print 'Classifying using logistic regression, train/test split 80/20'
 l1 = classifynosmote(x,y,linear_model.LogisticRegression(),ts,cutoff,'Logistic regression','b')
+print 'Classifying using the random forest classifier, train/test split 80/20'
 l2 = classifynosmote(x,y,RandomForestClassifier(),ts,cutoff,'Random forest','r')
+print 'Classifying using the 5-NN classifier, train/test split 80/20'
 l3 = classifynosmote(x,y,neighbors.KNeighborsClassifier(algorithm='kd_tree'),ts,cutoff,'5-NN','g')
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
-plt.legend(handles=[l1, l2, l3])
+plt.legend(handles=[l0, l1, l2, l3])
 plt.title('ROC Curve, no SMOTE')
 
 plt.subplot(1, 2, 2)
 # Plot ROC curves of the logistic classifier, the random forest classifier, and the 5-NN classifier, with the usage of SMOTE.
+print 'With SMOTE'
+print 'Classifying using logistic regression, train/test split 80/20'
 l4 = classifywithsmote(x,y,linear_model.LogisticRegression(),ts,cutoff,'Logistic regression','b')
+print 'Classifying using the random forest classifier, train/test split 80/20'
 l5 = classifywithsmote(x,y,RandomForestClassifier(),ts,cutoff,'Random forest','r')
+print 'Classifying using the 5-NN classifier, train/test split 80/20'
 l6 = classifywithsmote(x,y,neighbors.KNeighborsClassifier(algorithm='kd_tree'),ts,cutoff,'5-NN','g')
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
-plt.legend(handles=[l4, l5, l6])
+plt.legend(handles=[l0, l4, l5, l6])
 plt.title('ROC Curve, with SMOTE')
 
+print 'Question 3: training the black box random forest classifier using 10-fold cross validation'
 # Evaluate the random forest classifier with 10-fold cross validation, using SMOTE on training data.
 kfoldcrossval(x,y,RandomForestClassifier(),10)
 

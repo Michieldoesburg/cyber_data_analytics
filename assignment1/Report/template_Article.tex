@@ -11,11 +11,11 @@
 \maketitle
 
 \section{A visualization of the data}
-For the visualization part of this assignment, we first started out by making bar plots of different kinds, but eventually settled  for the scatterplot as seen in figure 1. This scatterplot uses the amount of Eurocent spent per transaction, to allow for better comparisons to be made, as there were five different currencies in the dataset. Exchange rates of April 25, 2018 were used. As can be seen from the scatterplot, there are basically no fraudulent transactions where more than 800 Euro was spent, while there are many benign transactions where more than 800 Euro was spent. Other visualizations we made included the ratio of fraudulent versus non-fraudulent transactions per country and per card issuer. Notable observations were that nearly all fraudulent transactions come from Mexico, Australia, the United Kingdom and Sweden (over 90\% percent of all fraudulent transactions happened in these four countries). McCredit is responsible for a significantly higher percentage of fraudulent transactions than non-fraudulent transactions. The inverse is true for visadebit, which accounts for roughly 60 percent of benign transactions, yet only 10 percent of fraudulent ones.
+For the visualization part of this assignment, we first started out by making bar plots of different kinds, but eventually settled  for the scatterplot as seen in figure 1. This scatterplot uses the amount of Eurocent spent per transaction, to allow for better comparisons to be made, as there were five different currencies in the dataset. Exchange rates of April 25, 2018 were used. As can be seen from the scatterplot, there are no fraudulent transactions where more than 800 Euro was spent, while there are many benign transactions where more than 800 Euro was spent. Other visualizations we made included the ratio of fraudulent versus non-fraudulent transactions per country and per card issuer. Notable observations were that nearly all fraudulent transactions come from Mexico, Australia, the United Kingdom and Sweden (over 90\% percent of all fraudulent transactions happened in these four countries).
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=10cm,height=4cm]{Visualizations/AmtFraudvsNonFraud2.png}
-	\caption{A scatterplot of the amount of money spent in the sampled transactions. A red dot indicates a fraudulent transaction (these are only at the very left of the plot due to very little fraudulent transactions existing), while a blue dot indicates a benign transaction.}
+	\includegraphics[width=10cm,height=4.2cm]{Visualizations/AmtFraudvsNonFraud2.png}
+	\caption{A scatterplot of the amount of money spent in the sampled transactions. A red dot indicates a fraudulent transaction (these are only at the very left of the plot due to very little fraudulent transactions existing), while a blue dot indicates a benign transaction. Refused transactions are treated as benign in this case, as we needed to show all data points and we wanted to show that all confirmed fraudulent cases comply with our observation.}
 \end{figure}
 \clearpage
 \section{Applying SMOTE to the data}
@@ -66,7 +66,7 @@ As a way to improve our classifier even further, we tried to convert all the mon
 \end{flushleft}
 As can be seen, using converted currency amounts resulted in slightly more cases correctly being labelled as fraudulent, but the false positive rate is higher as well, indicating that the performance is actually worse when using converted currency amounts.\\
 \\
-Another thing what we did is not using SMOTE to balance training data while testing the performance of the random forest classifier using ten-fold cross-validation. This resulted in the following performance:
+Another thing what we did is not using SMOTE to balance training data while testing the performance of the random forest classifier using ten-fold cross-validation. This was mainly done to test the impact of SMOTE. This resulted in the following performance:
 \begin{flushleft}
 	TP: 3 \newline
 	FP: 5  \newline

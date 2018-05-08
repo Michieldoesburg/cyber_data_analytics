@@ -86,32 +86,8 @@ def findFeatureRanges():
             dict[key] = dict[key] / num_entries
 
         print(dict)
-    '''
-    print(isser_country_code_set)
-    print(tx_variant_code_set)
-    print(bin_set)
-    print(shopper_interaction_set)
-    print(card_verification_set)
-    print(cvc_response_set)
-    print(account_code_set)
-
-    print(isser_country_code_dict)
-    print(tx_variant_code_dict)
-    print(bin_dict)
-    print(shopper_interaction_dict)
-    print(card_verification_dict)
-    print(cvc_response_dict)
-    print(account_code_dict)'''
 
     feature_ranges = {}
-    '''
-    feature_ranges["issuer_country_code"] = isser_country_code_set
-    feature_ranges["tx_variant_code"] = tx_variant_code_set
-    feature_ranges["bin"] = bin_set
-    feature_ranges["shopper_interaction"] = shopper_interaction_set
-    feature_ranges["card_verification"] = card_verification_set
-    feature_ranges["cvc_response"] = cvc_response_set
-    feature_ranges["account_code"] = account_code_set'''
 
     feature_ranges["issuer_country_code"] = findHighRatioKeys(isser_country_code_dict)
     feature_ranges["tx_variant_code"] = tx_variant_code_set
@@ -125,9 +101,17 @@ def findFeatureRanges():
     print(feature_ranges["tx_variant_code"])
     print(feature_ranges["bin"])
     print(feature_ranges["shopper_interaction"])
-    print( feature_ranges["card_verification"])
+    print(feature_ranges["card_verification"])
     print(feature_ranges["cvc_response"])
-    print(feature_ranges["account_code"] )
+    print(feature_ranges["account_code"])
+
+    print(feature_ranges["issuer_country_code"].__len__())
+    print(feature_ranges["tx_variant_code"].__len__())
+    print(feature_ranges["bin"].__len__())
+    print(feature_ranges["shopper_interaction"].__len__())
+    print(feature_ranges["card_verification"].__len__())
+    print(feature_ranges["cvc_response"].__len__())
+    print(feature_ranges["account_code"].__len__())
 
     return feature_ranges
 
