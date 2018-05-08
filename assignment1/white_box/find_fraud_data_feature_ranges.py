@@ -105,13 +105,5 @@ def findFeatureRanges():
     print(feature_ranges["cvc_response"])
     print(feature_ranges["account_code"])
 
-    print(feature_ranges["issuer_country_code"].__len__())
-    print(feature_ranges["tx_variant_code"].__len__())
-    print(feature_ranges["bin"].__len__())
-    print(feature_ranges["shopper_interaction"].__len__())
-    print(feature_ranges["card_verification"].__len__())
-    print(feature_ranges["cvc_response"].__len__())
-    print(feature_ranges["account_code"].__len__())
-
     return feature_ranges
 
