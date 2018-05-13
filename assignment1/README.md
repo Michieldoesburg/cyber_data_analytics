@@ -4,4 +4,4 @@ This is the main folder for the files belonging to the first lab assignment of C
 
 How to use
 ------
-The code requires Python 2.7 and the Python packages scikit-learn and matplotlib to run. These in turn require numpy and scipy to function.
+The code requires Python 2.7 and the Python packages scikit-learn, imblearn and matplotlib to run. These in turn require numpy and scipy to function.
