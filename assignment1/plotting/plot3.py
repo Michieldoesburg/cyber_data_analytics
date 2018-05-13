@@ -1,7 +1,9 @@
 import csv
-from DataEntry import DataEntry
+
 import matplotlib.pyplot as plt
 import numpy as np
+
+from assignment1.white_box.DataEntry import DataEntry
 
 """
 This file plots the amount of fraud vs non fraud transactions per credit card number and email. 

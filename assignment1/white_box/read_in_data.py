@@ -1,5 +1,7 @@
 import csv
-from assignment1.plotting.DataEntry import DataEntry
+
+from assignment1.white_box.DataEntry import DataEntry
+
 
 def readInData(filename):
     """
