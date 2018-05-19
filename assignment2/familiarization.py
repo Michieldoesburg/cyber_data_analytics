@@ -1,14 +1,42 @@
 from pandas import read_csv
 from pandas import datetime
+import numpy as np
 from matplotlib import pyplot
+from statsmodels.tsa.arima_model import ARIMA
+from pandas.plotting import autocorrelation_plot
+from sklearn.metrics import mean_squared_error
 
+
+def get_corrs(df):
+    col_correlations = df.corr()
+    col_correlations.loc[:, :] = np.tril(col_correlations, k=-1)
+    cor_pairs = col_correlations.stack()
+    return cor_pairs.to_dict()
 
 def parser(x):
     return datetime.strptime(x, '%d/%m/%y %H')
 
+def predict_data_arima(df, keys, size_train, p, d, q):
+    filtered_data = df[keys]
+    X = filtered_data.values
+    train, test = X[0:size_train], X[size_train:len(X)]
+    history = [x for x in train]
+    predictions = list()
+    for t in range(len(test)):
+        model = ARIMA(history, order=(p, d, q))
+        model_fit = model.fit(disp=0)
+        output = model_fit.forecast()
+        yhat = output[0]
+        predictions.append(yhat)
+        obs = test[t]
+        history.append(obs)
+        print('predicted=%f, expected=%f' % (yhat, obs))
+    MSE = mean_squared_error(test, predictions)
+    return train.append(predictions), MSE
 
+
+# Read data.
 series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
-print(series.keys())
 
 # Select keys that you want to analyze.
 # This is the complete keyset: ['L_T1', 'L_T2', 'L_T3', 'L_T4', 'L_T5', 'L_T6', 'L_T7', 'F_PU1',
@@ -17,15 +45,22 @@ print(series.keys())
 #        'S_PU9', 'F_PU10', 'S_PU10', 'F_PU11', 'S_PU11', 'F_V2', 'S_V2',
 #        'P_J280', 'P_J269', 'P_J300', 'P_J256', 'P_J289', 'P_J415', 'P_J302',
 #        'P_J306', 'P_J307', 'P_J317', 'P_J14', 'P_J422', 'ATT_FLAG']
-keys = ['L_T1', 'L_T2', 'F_PU1', 'S_PU1', 'F_PU2', 'S_PU2', 'F_PU3', 'S_PU3', 'F_PU4', 'S_PU4', 'F_PU5',]
+# keys = ['S_PU1', 'S_PU2', 'S_PU3', 'S_PU4', 'S_PU5', 'S_PU6', 'S_PU7', 'S_PU8', 'S_PU9']
+keys = ['L_T1', 'L_T2', 'F_PU1', 'F_PU2']
 
 # Select start and stop indices for a given data range.
 # (Set end to 8762 and start to 0 for all).
 start = 0
 end = 500
 
+# Select a subset of data that you want to analyze.
 series = series[keys]
 series = series[start:end]
 
+# Plot data.
 series.plot()
+print(series.corr())
+
+# Predict data.
+
 pyplot.show()
