@@ -16,9 +16,10 @@ def get_corrs(df):
 def parser(x):
     return datetime.strptime(x, '%d/%m/%y %H')
 
-def predict_data_arima(df, keys, size_train, p, d, q):
+def predict_data_arima(df, keys, train_frac, p, d, q):
     filtered_data = df[keys]
     X = filtered_data.values
+    size_train = int(len(X) * train_frac)
     train, test = X[0:size_train], X[size_train:len(X)]
     history = [x for x in train]
     predictions = list()
@@ -30,10 +31,9 @@ def predict_data_arima(df, keys, size_train, p, d, q):
         predictions.append(yhat)
         obs = test[t]
         history.append(obs)
-        print('predicted=%f, expected=%f' % (yhat, obs))
-    MSE = mean_squared_error(test, predictions)
-    return train.append(predictions), MSE
-
+    MSE = mean_squared_error(predictions, test)
+    print('MSE for this prediction is: %.5f' % MSE)
+    return predictions, test
 
 # Read data.
 series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
@@ -58,9 +58,21 @@ series = series[keys]
 series = series[start:end]
 
 # Plot data.
-series.plot()
+# series.plot()
 print(series.corr())
 
 # Predict data.
+# Necessary parameters for fine-tuning.
+key_for_prediction = 'L_T1'
+train_frac = 0.66
+p = 7
+d = 1
+q = 0
+
+# Predict and plot data.
+predicted_data, actual_data = predict_data_arima(series, key_for_prediction, train_frac, p, d, q)
+x = range(0, len(predicted_data))
+pyplot.plot(x,predicted_data,color='red')
+pyplot.plot(x,actual_data)
 
 pyplot.show()
