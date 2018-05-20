@@ -3,18 +3,12 @@ from pandas import datetime
 from matplotlib import pyplot
 from .predictors import *
 
-
-def get_corrs(df):
-    col_correlations = df.corr()
-    col_correlations.loc[:, :] = np.tril(col_correlations, k=-1)
-    cor_pairs = col_correlations.stack()
-    return cor_pairs.to_dict()
-
 def parser(x):
     return datetime.strptime(x, '%d/%m/%y %H')
 
 # Read data.
 series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
+all_keys = series.keys()
 
 # Select keys that you want to analyze.
 # This is the complete keyset: ['L_T1', 'L_T2', 'L_T3', 'L_T4', 'L_T5', 'L_T6', 'L_T7', 'F_PU1',
@@ -24,38 +18,20 @@ series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0],
 #        'P_J280', 'P_J269', 'P_J300', 'P_J256', 'P_J289', 'P_J415', 'P_J302',
 #        'P_J306', 'P_J307', 'P_J317', 'P_J14', 'P_J422', 'ATT_FLAG']
 # keys = ['S_PU1', 'S_PU2', 'S_PU3', 'S_PU4', 'S_PU5', 'S_PU6', 'S_PU7', 'S_PU8', 'S_PU9']
-keys = ['L_T1', 'L_T2', 'F_PU1', 'F_PU2']
 
 # Select start and stop indices for a given data range.
 # (Set end to 8762 and start to 0 for all).
 start = 0
 end = 500
 
-# Select a subset of data that you want to analyze.
-series = series[keys]
-series = series[start:end]
-
-# Plot data.
-# series.plot()
-print(series.corr())
-
-# Predict data.
-# Necessary parameters for fine-tuning.
 key_for_prediction = 'L_T1'
 train_frac = 0.66
 p = 7
 d = 1
 q = 0
 
-periods = 10
-trend_param = 'add'
-seasonal_param = 'mul'
-
-# Predict and plot data.
-predicted_data_arima, actual_data = predict_data_arima(series, key_for_prediction, train_frac, p, d, q)
-predicted_data_es, actual_data = predict_data_expsmoothing(series, key_for_prediction, train_frac, periods, trend_param, seasonal_param)
+predicted_data_arima, actual_data = predict_data_arma(series, key_for_prediction, train_frac, p, d, q)
 pyplot.plot(predicted_data_arima,color='red')
-pyplot.plot(predicted_data_es,color='green')
 pyplot.plot(actual_data)
 
 pyplot.show()
