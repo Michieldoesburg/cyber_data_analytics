@@ -14,17 +14,6 @@ def prepare_data(df, keys, train_frac):
     history = [x for x in train]
     return train, test, test_index, history, list()
 
-def proceed_prediction(test, history, model):
-    predictions = list()
-    for t in range(len(test)):
-        model_fit = model.fit(disp=0)
-        output = model_fit.forecast()
-        yhat = output[0]
-        predictions.append(yhat)
-        obs = test[t]
-        history.append(obs)
-    return predictions
-
 def predict_data_arma(df, keys, train_frac, p, d, q):
     train, test, test_index, history, predictions = prepare_data(df, keys, train_frac)
     for t in range(len(test)):
@@ -56,8 +45,8 @@ def predict_data_arima(df, keys, train_frac, p, d, q):
 def predict_data_expsmoothing(df, keys, train_frac, periods, trend_param, seasonal_param):
     train, test, test_index, history, predictions = prepare_data(df, keys, train_frac)
     for t in range(len(test)):
-        model = ARIMA(history, ExponentialSmoothing(np.asarray(train), seasonal_periods=periods, seasonal=seasonal_param, trend=trend_param))
-        model_fit = model.fit(disp=0)
+        model = ExponentialSmoothing(train, seasonal_periods=periods, seasonal=seasonal_param, trend=trend_param)
+        model_fit = model.fit()
         output = model_fit.forecast()
         yhat = output[0]
         predictions.append(yhat)

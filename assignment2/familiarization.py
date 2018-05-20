@@ -2,6 +2,7 @@ from pandas import read_csv
 from pandas import datetime
 from matplotlib import pyplot
 from assignment2.predictors import *
+from assignment2.select_data import *
 
 
 def get_corrs(df):
@@ -32,8 +33,7 @@ start = 0
 end = 300
 
 # Select a subset of data that you want to analyze.
-series = series[keys]
-series = series[start:end]
+series = select_data(series, keys, start, end)
 
 # Plot data.
 # series.plot()
@@ -49,13 +49,11 @@ q = 0
 
 periods = 10
 trend_param = 'add'
-seasonal_param = 'mul'
+seasonal_param = 'add'
 
 # Predict and plot data.
 predicted_data_arima, actual_data = predict_data_arima(series, key_for_prediction, train_frac, p, d, q)
-#predicted_data_var, actual_data = predict_data_VAR(series, key_for_prediction, train_frac)
 pyplot.plot(predicted_data_arima,color='red')
-#pyplot.plot(predicted_data_var,color='green')
 pyplot.plot(actual_data)
 
 pyplot.show()

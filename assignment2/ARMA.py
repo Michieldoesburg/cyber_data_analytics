@@ -1,7 +1,29 @@
 from pandas import read_csv
 from pandas import datetime
 from matplotlib import pyplot
-from .predictors import *
+from assignment2.predictors import *
+from assignment2.select_data import *
+from statsmodels.tsa.arima_model import ARIMA
+from math import inf
+
+def AIC(ll):
+    return float(2*3 - 2*ll)
+
+def determine_params_by_AIC(df, keys, train_frac):
+    _, _, _, history, _ = prepare_data(df, keys, train_frac)
+    potential_p = range(10)
+    potential_d = range(5)
+    potential_q = range(3)
+    best_p, best_d, best_q = 0, 0, 0
+    min_AIC = inf
+    for i in potential_p:
+        for j in potential_d:
+            for k in potential_q:
+                candidate_AIC = AIC(ARIMA(history, order=(i,j,k)).loglike((i,j)))
+                if candidate_AIC < min_AIC:
+                    min_AIC = candidate_AIC
+                    best_p, best_d, best_q = i, j, k
+    return best_p, best_d, best_q
 
 def parser(x):
     return datetime.strptime(x, '%d/%m/%y %H')
@@ -26,11 +48,12 @@ end = 500
 
 key_for_prediction = 'L_T1'
 train_frac = 0.66
-p = 7
-d = 1
-q = 0
 
-predicted_data_arima, actual_data = predict_data_arma(series, key_for_prediction, train_frac, p, d, q)
+series = select_data(series, key_for_prediction, start, end)
+
+p, d, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
+
+predicted_data_arima, actual_data = predict_data_arima(series, key_for_prediction, train_frac, p, d, q)
 pyplot.plot(predicted_data_arima,color='red')
 pyplot.plot(actual_data)
 
