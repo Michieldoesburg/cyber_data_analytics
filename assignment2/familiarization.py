@@ -1,8 +1,10 @@
 from pandas import read_csv
 from pandas import datetime
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot
 from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.api import ExponentialSmoothing
 from pandas.plotting import autocorrelation_plot
 from sklearn.metrics import mean_squared_error
 
@@ -20,6 +22,7 @@ def predict_data_arima(df, keys, train_frac, p, d, q):
     filtered_data = df[keys]
     X = filtered_data.values
     size_train = int(len(X) * train_frac)
+    test_index = filtered_data[size_train:len(X)].index
     train, test = X[0:size_train], X[size_train:len(X)]
     history = [x for x in train]
     predictions = list()
@@ -33,7 +36,19 @@ def predict_data_arima(df, keys, train_frac, p, d, q):
         history.append(obs)
     MSE = mean_squared_error(predictions, test)
     print('MSE for this prediction is: %.5f' % MSE)
-    return predictions, test
+    return pd.DataFrame(predictions, test_index), pd.DataFrame(test, test_index)
+
+def predict_data_expsmoothing(df, keys, train_frac, periods, trend_param, seasonal_param):
+    filtered_data = df[keys]
+    size_data = len(filtered_data.index)
+    size_train = int(size_data * train_frac)
+    train, test = filtered_data[0:size_train], filtered_data[size_train:size_data]
+    fit = ExponentialSmoothing(np.asarray(train), seasonal_periods=periods, seasonal=seasonal_param, trend=trend_param).fit()
+    yhat = fit.forecast(len(test.index))
+    MSE = mean_squared_error(np.asarray(test), np.asarray(yhat))
+    print('MSE for this prediction is: %.5f' % MSE)
+    return pd.DataFrame(yhat, test.index), test
+
 
 # Read data.
 series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
@@ -69,10 +84,15 @@ p = 7
 d = 1
 q = 0
 
+periods = 10
+trend_param = 'add'
+seasonal_param = 'mul'
+
 # Predict and plot data.
-predicted_data, actual_data = predict_data_arima(series, key_for_prediction, train_frac, p, d, q)
-x = range(0, len(predicted_data))
-pyplot.plot(x,predicted_data,color='red')
-pyplot.plot(x,actual_data)
+predicted_data_arima, actual_data = predict_data_arima(series, key_for_prediction, train_frac, p, d, q)
+predicted_data_es, actual_data = predict_data_expsmoothing(series, key_for_prediction, train_frac, periods, trend_param, seasonal_param)
+pyplot.plot(predicted_data_arima,color='red')
+pyplot.plot(predicted_data_es,color='green')
+pyplot.plot(actual_data)
 
 pyplot.show()
