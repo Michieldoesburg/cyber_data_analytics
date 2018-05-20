@@ -3,7 +3,7 @@ from pandas import datetime
 from matplotlib import pyplot
 from assignment2.predictors import *
 from assignment2.select_data import *
-from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.arima_model import ARIMA, ARMAResults
 from math import inf
 
 def AIC(ll):
@@ -12,17 +12,19 @@ def AIC(ll):
 def determine_params_by_AIC(df, keys, train_frac):
     _, _, _, history, _ = prepare_data(df, keys, train_frac)
     potential_p = range(10)
-    potential_d = range(5)
-    potential_q = range(3)
+    potential_d = range(2)
     best_p, best_d, best_q = 0, 0, 0
     min_AIC = inf
     for i in potential_p:
         for j in potential_d:
-            for k in potential_q:
-                candidate_AIC = AIC(ARIMA(history, order=(i,j,k)).loglike((i,j)))
-                if candidate_AIC < min_AIC:
-                    min_AIC = candidate_AIC
-                    best_p, best_d, best_q = i, j, k
+            model = ARIMA(history, order=(i,j,0))
+            model_fit = model.fit(disp=0)
+            # print(ARMAResults.summary(model_fit).tables[0])
+            # print(float(ARMAResults.summary(model_fit).tables[0].data[3][3]))
+            candidate_AIC = float(ARMAResults.summary(model_fit).tables[0].data[3][3])
+            if candidate_AIC < min_AIC:
+                min_AIC = candidate_AIC
+                best_p, best_d = i, j
     return best_p, best_d, best_q
 
 def parser(x):
@@ -49,9 +51,8 @@ end = 500
 key_for_prediction = 'L_T1'
 train_frac = 0.66
 
-series = select_data(series, key_for_prediction, start, end)
-
 p, d, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
+print('Best parameter combination: (p,d,q) = ('+str(p)+','+str(d)+','+str(q)+')')
 
 predicted_data_arima, actual_data = predict_data_arima(series, key_for_prediction, train_frac, p, d, q)
 pyplot.plot(predicted_data_arima,color='red')
