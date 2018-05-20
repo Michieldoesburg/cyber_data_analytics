@@ -1,7 +1,7 @@
 from pandas import read_csv
 from pandas import datetime
 from matplotlib import pyplot
-from .predictors import *
+from assignment2.predictors import *
 
 
 def get_corrs(df):
@@ -29,7 +29,7 @@ keys = ['L_T1', 'L_T2', 'F_PU1', 'F_PU2']
 # Select start and stop indices for a given data range.
 # (Set end to 8762 and start to 0 for all).
 start = 0
-end = 500
+end = 300
 
 # Select a subset of data that you want to analyze.
 series = series[keys]
@@ -53,9 +53,9 @@ seasonal_param = 'mul'
 
 # Predict and plot data.
 predicted_data_arima, actual_data = predict_data_arima(series, key_for_prediction, train_frac, p, d, q)
-predicted_data_es, actual_data = predict_data_expsmoothing(series, key_for_prediction, train_frac, periods, trend_param, seasonal_param)
+#predicted_data_var, actual_data = predict_data_VAR(series, key_for_prediction, train_frac)
 pyplot.plot(predicted_data_arima,color='red')
-pyplot.plot(predicted_data_es,color='green')
+#pyplot.plot(predicted_data_var,color='green')
 pyplot.plot(actual_data)
 
 pyplot.show()
