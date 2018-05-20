@@ -51,7 +51,8 @@ end = 500
 key_for_prediction = 'L_T1'
 train_frac = 0.66
 
-p, d, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
+# p, d, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
+p, d, q = 5, 1, 0
 print('Best parameter combination: (p,d,q) = ('+str(p)+','+str(d)+','+str(q)+')')
 
 predicted_data_arima, actual_data = predict_data_arima(series, key_for_prediction, train_frac, p, d, q)
