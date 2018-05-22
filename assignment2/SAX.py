@@ -4,6 +4,9 @@ import os
 import numpy as np
 import math
 
+class DictionarySizeIsNotSupported(Exception): pass
+class StringsAreDifferentLength(Exception): pass
+class OverlapSpecifiedIsNotSmallerThanWindowSize(Exception): pass
 
 class SAX(object):
     """
@@ -148,12 +151,12 @@ class SAX(object):
 #        if not numSubsequences:
 #            numSubsequences = 20
         self.windowSize = cover
-        print self.windowSize
+        print(self.windowSize)
         #if not overlappingFraction:
         #    overlappingFraction = 0.9
         #overlap = self.windowSize*overlappingFraction
         moveSize = int(stride)
-        print 'move'+str(moveSize)
+        print('move'+str(moveSize))
         if moveSize < 1:
             raise OverlapSpecifiedIsNotSmallerThanWindowSize()
         ptr = 0

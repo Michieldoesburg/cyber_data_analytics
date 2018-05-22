@@ -11,14 +11,12 @@ def AIC(ll):
 
 def determine_params_by_AIC(df, keys, train_frac):
     _, _, _, history, _ = prepare_data(df, keys, train_frac)
-    potential_p = range(int(0.1*len(history)))
+    potential_p = range(int(0.05*len(history)))
     best_p, best_q = 0, 0
     min_AIC = inf
     for i in potential_p:
         model = ARMA(history, order=(i,0))
         model_fit = model.fit(disp=0)
-        # print(ARMAResults.summary(model_fit).tables[0])
-        # print(float(ARMAResults.summary(model_fit).tables[0].data[3][3]))
         candidate_AIC = float(ARMAResults.summary(model_fit).tables[0].data[3][3])
         if candidate_AIC < min_AIC:
             min_AIC = candidate_AIC

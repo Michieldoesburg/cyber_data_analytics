@@ -46,17 +46,17 @@ def diff_segmentation(diff_epslon, P, step, path, data, PPA_mean, indices, plot)
             diff_seg_mean = PPA_mean[0, shift]-PPA_mean[0,head]
     if plot == True:
         plt.figure()
-        for i in xrange(1, len(P)+1):
+        for i in range(1, len(P)+1):
             plt.subplot(len(P), 1, i)
             if i == len(P):
                 plt.plot(data[P[-1]].values, 'b')
-                for j in xrange(len(R)):
+                for j in range(len(R)):
                     plt.plot([R[j].start, R[j].start], [np.min(data[P[-1]]), np.max(data[P[-1]])], 'r', linewidth=0.2)
                     plt.xlabel('Time /s')
                     plt.ylabel(P[-1])
             else:
                 plt.plot(data[P[i-1]].values, 'b')
-                for j in xrange(len(R)):
+                for j in range(len(R)):
                     plt.plot([R[j].start, R[j].start], [np.min(data[P[i-1]]), np.max(data[P[i-1]])], 'r', linewidth=0.2)
                     plt.xlabel('Time /s')
                     plt.ylabel(P[i-1])
