@@ -2,8 +2,8 @@ from pandas import read_csv
 from pandas import datetime
 from matplotlib import pyplot
 from assignment2.predictors import *
+from statsmodels.tsa.arima_model import ARMAResults
 from assignment2.select_data import *
-from statsmodels.tsa.arima_model import ARIMA, ARMAResults
 from math import inf
 
 def AIC(ll):
@@ -12,12 +12,12 @@ def AIC(ll):
 def determine_params_by_AIC(df, keys, train_frac):
     _, _, _, history, _ = prepare_data(df, keys, train_frac)
     potential_p = range(10)
-    potential_d = range(2)
-    best_p, best_d, best_q = 0, 0, 0
+    potential_q = range(2)
+    best_p, best_q = 0, 0
     min_AIC = inf
     for i in potential_p:
-        for j in potential_d:
-            model = ARIMA(history, order=(i,j,0))
+        for j in potential_q:
+            model = ARMA(history, order=(i,j))
             model_fit = model.fit(disp=0)
             # print(ARMAResults.summary(model_fit).tables[0])
             # print(float(ARMAResults.summary(model_fit).tables[0].data[3][3]))
@@ -25,7 +25,7 @@ def determine_params_by_AIC(df, keys, train_frac):
             if candidate_AIC < min_AIC:
                 min_AIC = candidate_AIC
                 best_p, best_d = i, j
-    return best_p, best_d, best_q
+    return best_p, best_q
 
 def parser(x):
     return datetime.strptime(x, '%d/%m/%y %H')
@@ -51,12 +51,14 @@ end = 500
 key_for_prediction = 'L_T1'
 train_frac = 0.66
 
-# p, d, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
-p, d, q = 5, 1, 0
-print('Best parameter combination: (p,d,q) = ('+str(p)+','+str(d)+','+str(q)+')')
+series = select_data(series, series.keys(), start, end)
 
-predicted_data_arima, actual_data = predict_data_arima(series, key_for_prediction, train_frac, p, d, q)
-pyplot.plot(predicted_data_arima,color='red')
+# p, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
+p, q = 5, 0
+print('Best parameter combination: (p,q) = ('+str(p)+','+str(q)+')')
+
+predicted_data_arma, actual_data = predict_data_arma(series, key_for_prediction, train_frac, p, q)
+pyplot.plot(predicted_data_arma,color='red')
 pyplot.plot(actual_data)
 
 pyplot.show()

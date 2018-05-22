@@ -14,16 +14,18 @@ def prepare_data(df, keys, train_frac):
     history = [x for x in train]
     return train, test, test_index, history, list()
 
-def predict_data_arma(df, keys, train_frac, p, d, q):
+def predict_data_arma(df, keys, train_frac, p, q):
     train, test, test_index, history, predictions = prepare_data(df, keys, train_frac)
+    print('Size train data: %.5f' % len(train))
     for t in range(len(test)):
-        model = ARMA(history, order=(p, d, q))
+        model = ARMA(history, order=(p, q))
         model_fit = model.fit(disp=0)
         output = model_fit.forecast()
         yhat = output[0]
         predictions.append(yhat)
         obs = test[t]
         history.append(obs)
+        print('Predicted: %.5f, actual: %.5f' %(yhat, obs))
     MSE = mean_squared_error(predictions, test)
     print('MSE for this prediction is: %.5f' % MSE)
     return pd.DataFrame(predictions, test_index), pd.DataFrame(test, test_index)
