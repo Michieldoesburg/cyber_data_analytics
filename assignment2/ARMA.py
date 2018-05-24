@@ -25,7 +25,7 @@ def parser(x):
     return datetime.strptime(x, '%d/%m/%y %H')
 
 # Read data.
-series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
+series = read_csv('data/BATADAL_train_dataset_2.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
 all_keys = series.keys()
 
 # Select keys that you want to analyze.
@@ -40,13 +40,12 @@ all_keys = series.keys()
 # Select start and stop indices for a given data range.
 # (Set end to 8762 and start to 0 for all).
 start = 0
-end = 100
+end = 500
 
 key_for_prediction = 'L_T1'
 train_frac = 0.66
 
 series = select_data(series, series.keys(), start, end)
-
 p, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
 print('Best parameter combination: (p,q) = ('+str(p)+','+str(q)+')')
 
