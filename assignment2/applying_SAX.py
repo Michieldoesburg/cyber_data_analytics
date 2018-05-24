@@ -2,6 +2,7 @@ from pandas import read_csv
 from pandas import datetime
 from assignment2.select_data import *
 from assignment2.SAX import *
+import ngram as ng
 
 def parser(x):
     return datetime.strptime(x, '%d/%m/%y %H')
@@ -33,3 +34,15 @@ for key in series.keys():
     SAX_discretized_data_string = sax.to_letter_rep(vals.values.T)[0]
     register[key] = SAX_discretized_data_string
 
+# Process strings that are used for N-Gramming.
+# Interesting link for N-gram functions: https://pythonhosted.org/ngram/tutorial.html
+G = ng.NGram([register['L_T1']])
+for x in list(G.split(register['L_T1'])):
+    G.add(x)
+
+frag = list(G.split('0364041'))[6]
+print(G.search(frag))
+
+# Late night ideas for detecting attacks with this way:
+#   Split test signal, check if every fragment has a somewhat corresponding fragment in the training data.
+#   Compare entire string (might not be the best idea...)
