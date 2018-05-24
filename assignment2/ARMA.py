@@ -9,10 +9,11 @@ from math import inf
 
 def determine_params_by_AIC(df, keys, train_frac):
     _, _, _, history, _ = prepare_data(df, keys, train_frac)
-    potential_p = range(int(0.05*len(history)))
+    potential_p = range(min(int(0.05*len(history)),11))
     best_p, best_q = 0, 0
     min_AIC = inf
     for i in potential_p:
+        print('Testing: %i' % i)
         model = ARMA(history, order=(i,0))
         model_fit = model.fit(disp=0)
         candidate_AIC = float(ARMAResults.summary(model_fit).tables[0].data[3][3])
@@ -25,7 +26,7 @@ def parser(x):
     return datetime.strptime(x, '%d/%m/%y %H')
 
 # Read data.
-series = read_csv('data/BATADAL_train_dataset_2.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
+series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
 all_keys = series.keys()
 
 # Select keys that you want to analyze.
@@ -40,7 +41,7 @@ all_keys = series.keys()
 # Select start and stop indices for a given data range.
 # (Set end to 8762 and start to 0 for all).
 start = 0
-end = 500
+end = 800
 
 key_for_prediction = 'L_T1'
 train_frac = 0.66
