@@ -4,10 +4,8 @@ from matplotlib import pyplot
 from assignment2.predictors import *
 from statsmodels.tsa.arima_model import ARMAResults
 from assignment2.select_data import *
+from assignment2.residual_error import *
 from math import inf
-
-def AIC(ll):
-    return float(2*3 - 2*ll)
 
 def determine_params_by_AIC(df, keys, train_frac):
     _, _, _, history, _ = prepare_data(df, keys, train_frac)
@@ -42,7 +40,7 @@ all_keys = series.keys()
 # Select start and stop indices for a given data range.
 # (Set end to 8762 and start to 0 for all).
 start = 0
-end = 500
+end = 100
 
 key_for_prediction = 'L_T1'
 train_frac = 0.66
@@ -53,7 +51,19 @@ p, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
 print('Best parameter combination: (p,q) = ('+str(p)+','+str(q)+')')
 
 predicted_data_arma, actual_data = predict_data_arma(series, key_for_prediction, train_frac, p, q)
+pyplot.subplot(1, 2, 1)
 pyplot.plot(predicted_data_arma,color='red')
 pyplot.plot(actual_data)
+pyplot.subplot(1, 2, 2)
+error = get_residual_error(predicted_data_arma, actual_data)
 
+mean, stddev = get_mean_stddev(error)
+lower = -mean - 3.0*stddev
+upper = mean + 3.0*stddev
+print('Lower bound: %.5f, upper bound: %.5f' % (lower, upper))
+
+lower_bound, upper_bound = build_lower_upper_bounds(lower, upper, error.index)
+pyplot.plot(error)
+pyplot.plot(lower_bound,color='red')
+pyplot.plot(upper_bound,color='red')
 pyplot.show()

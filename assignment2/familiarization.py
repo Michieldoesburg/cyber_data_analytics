@@ -39,21 +39,6 @@ series = select_data(series, keys, start, end)
 # series.plot()
 print(series.corr())
 
-# Predict data.
-# Necessary parameters for fine-tuning.
-key_for_prediction = 'L_T1'
-train_frac = 0.66
-p = 7
-d = 1
-q = 0
-
-periods = 10
-trend_param = 'add'
-seasonal_param = 'add'
-
-# Predict and plot data.
-predicted_data_arima, actual_data = predict_data_arima(series, key_for_prediction, train_frac, p, d, q)
-pyplot.plot(predicted_data_arima,color='red')
-pyplot.plot(actual_data)
+pyplot.plot(series)
 
 pyplot.show()
