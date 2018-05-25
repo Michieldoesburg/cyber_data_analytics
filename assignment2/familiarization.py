@@ -25,7 +25,7 @@ series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0],
 #        'P_J280', 'P_J269', 'P_J300', 'P_J256', 'P_J289', 'P_J415', 'P_J302',
 #        'P_J306', 'P_J307', 'P_J317', 'P_J14', 'P_J422', 'ATT_FLAG']
 # keys = ['S_PU1', 'S_PU2', 'S_PU3', 'S_PU4', 'S_PU5', 'S_PU6', 'S_PU7', 'S_PU8', 'S_PU9']
-keys = ['L_T1', 'L_T2', 'F_PU1', 'F_PU2']
+keys = ['L_T1', 'L_T2', 'F_PU1', 'F_PU2', 'P_J302']
 
 # Select start and stop indices for a given data range.
 # (Set end to 8762 and start to 0 for all).
@@ -39,6 +39,11 @@ series = select_data(series, keys, start, end)
 # series.plot()
 print(series.corr())
 
-pyplot.plot(series)
+handles = list()
+for i in keys:
+    l, = pyplot.plot(series[i], label=i)
+    handles.append(l)
+
+pyplot.legend(handles, keys)
 
 pyplot.show()
