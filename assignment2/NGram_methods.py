@@ -17,6 +17,7 @@ class NGram_methods(object):
 
     def analyze_signal(self, new_signal, new_signal_key):
         signal_discretized = self.apply_SAX(new_signal, new_signal_key)
+        return self.apply_ngram_methods(signal_discretized, new_signal_key)
 
     def apply_SAX(self, signal, key):
         sax = SAX(wordSize=self.wordsizes[key])
@@ -36,3 +37,9 @@ class NGram_methods(object):
             comparison_scores.append(score)
         return comparison_scores
 
+    def overview_scores(self, scores):
+        print('Statistical overview of the scores')
+        print('Average score: %.5f' % np.mean(scores))
+        print('Standard deviation: %.5f' % np.std(scores))
+        print('Minimum score: %.5f' % np.min(scores))
+        print('Maximum score: %.5f' % np.max(scores))
