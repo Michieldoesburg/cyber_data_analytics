@@ -17,6 +17,8 @@ def find_malicious_data(scores, mean, std):
     return combine_tuples(potential_malicious_indices)
 
 def combine_tuples(tuples):
+    if len(tuples) == 0:
+        return list()
     res = list()
     temp_tuple = tuples[0]
     for i in range(1, len(tuples)):
@@ -29,7 +31,7 @@ def combine_tuples(tuples):
             temp_tuple = new_tuple
     return res
 
-key = 'F_PU2'
+key = 'L_T1'
 
 # Read data.
 series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
