@@ -10,16 +10,22 @@ from math import inf
 def determine_params_by_AIC(df, keys, train_frac):
     _, _, _, history, _ = prepare_data(df, keys, train_frac)
     potential_p = range(min(int(0.05*len(history)),11))
+    potential_q = range(3)
     best_p, best_q = 0, 0
     min_AIC = inf
     for i in potential_p:
-        print('Testing: %i' % i)
-        model = ARMA(history, order=(i,0))
-        model_fit = model.fit(disp=0)
-        candidate_AIC = float(ARMAResults.summary(model_fit).tables[0].data[3][3])
-        if candidate_AIC < min_AIC:
-            min_AIC = candidate_AIC
-            best_p = i
+        for j in potential_q:
+            try:
+                print('Testing: (%i, %i)' % (i, j))
+                model = ARMA(history, order=(i,j))
+                model_fit = model.fit(disp=0)
+                candidate_AIC = float(ARMAResults.summary(model_fit).tables[0].data[3][3])
+                if candidate_AIC < min_AIC:
+                    min_AIC = candidate_AIC
+                    best_p = i
+                    best_q = j
+            except:
+                pass
     return best_p, best_q
 
 def parser(x):
@@ -41,7 +47,7 @@ all_keys = series.keys()
 # Select start and stop indices for a given data range.
 # (Set end to 8762 and start to 0 for all).
 start = 0
-end = 800
+end = 300
 
 key_for_prediction = 'L_T1'
 train_frac = 0.66
