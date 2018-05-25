@@ -25,8 +25,10 @@ class NGram_methods(object):
 
     def apply_ngram_methods(self, discretized_new_signal, key):
         discretized_original_signal = self.dictionary[key]
-        ngram = ng.NGram
-        ngram.add(self.ngram.split(discretized_original_signal))
+        ngram = ng.NGram()
+        splits = list(ngram.split(discretized_original_signal))
+        for x in splits:
+            ngram.add(x)
         list_new_signal = ngram.split(discretized_new_signal)
         return self.get_ngram_similarities(ngram, list_new_signal)
 
@@ -36,6 +38,11 @@ class NGram_methods(object):
             score = ngram.search(x)[0][1]
             comparison_scores.append(score)
         return comparison_scores
+
+    def compare_complete_string(self, new_signal, new_signal_key):
+        discretized_new_signal = self.apply_SAX(new_signal, new_signal_key)
+        discretized_original_signal = self.dictionary[new_signal_key]
+        return ng.NGram.compare(discretized_new_signal, discretized_original_signal)
 
     def overview_scores(self, scores):
         print('Statistical overview of the scores')

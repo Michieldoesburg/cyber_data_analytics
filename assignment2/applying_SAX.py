@@ -2,6 +2,7 @@ from pandas import read_csv
 from pandas import datetime
 from assignment2.select_data import *
 from assignment2.SAX import *
+from assignment2.NGram_methods import *
 import ngram as ng
 
 def parser(x):
@@ -20,28 +21,18 @@ size = float(end - start)
 window_size = 15.0
 wordsize = int(size/window_size)
 
-key_for_prediction = 'L_T1'
-train_frac = 0.66
+wordsizes = dict()
+for k in series.keys():
+    wordsizes[k] = wordsize
 
 series = select_data(series, series.keys(), start, end)
 
-sax = SAX(wordSize=wordsize)
+ngm = NGram_methods(series, wordsizes)
+print(ngm.dictionary)
 
-register = dict()
-
-for key in series.keys():
-    vals = series[key]
-    SAX_discretized_data_string = sax.to_letter_rep(vals.values.T)[0]
-    register[key] = SAX_discretized_data_string
-
-# Process strings that are used for N-Gramming.
-# Interesting link for N-gram functions: https://pythonhosted.org/ngram/tutorial.html
-G = ng.NGram([register['L_T1']])
-for x in list(G.split(register['L_T1'])):
-    G.add(x)
-
-frag = list(G.split('0364041'))[6]
-print(G.search(frag))
+series_malicious = read_csv('data/BATADAL_test_dataset.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
+signal = series_malicious['L_T1'].values
+ngm.overview_scores(ngm.analyze_signal(signal, 'L_T1'))
 
 # Late night ideas for detecting attacks with this way:
 #   Split test signal, check if every fragment has a somewhat corresponding fragment in the training data.
