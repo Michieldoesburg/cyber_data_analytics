@@ -14,9 +14,22 @@ def find_malicious_data(scores, mean, std):
     for i in scores.keys():
         if scores[i] < min_threshold:
             potential_malicious_indices.append(i)
-    return potential_malicious_indices
+    return combine_tuples(potential_malicious_indices)
 
-key = 'F_PU1'
+def combine_tuples(tuples):
+    res = list()
+    temp_tuple = tuples[0]
+    for i in range(1, len(tuples)):
+        new_tuple = tuples[i]
+        # If tuples overlap, merge them.
+        if new_tuple[0] <= temp_tuple[1]:
+            temp_tuple = (temp_tuple[0], new_tuple[1])
+        else:
+            res.append(temp_tuple)
+            temp_tuple = new_tuple
+    return res
+
+key = 'F_PU2'
 
 # Read data.
 series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
