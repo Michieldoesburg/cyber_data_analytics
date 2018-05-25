@@ -8,17 +8,19 @@ import ngram as ng
 def parser(x):
     return datetime.strptime(x, '%d/%m/%y %H')
 
+key = 'F_PU1'
+
 # Read data.
 series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
 
 # Select start and stop indices for a given data range.
 # (Set end to 8762 and start to 0 for all).
 start = 0
-end = 1000
+end = 8700
 
 # determine word size.
 size = float(end - start)
-window_size = 15.0
+window_size = 5.0
 wordsize = int(size/window_size)
 
 wordsizes = dict()
@@ -31,8 +33,10 @@ ngm = NGram_methods(series, wordsizes)
 print(ngm.dictionary)
 
 series_malicious = read_csv('data/BATADAL_test_dataset.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
-signal = series_malicious['L_T1'].values
-ngm.overview_scores(ngm.analyze_signal(signal, 'L_T1'))
+signal = series_malicious[key].values
+dict = ngm.analyze_signal(signal, key)
+print(dict)
+ngm.overview_scores(list(dict.values()))
 
 # Late night ideas for detecting attacks with this way:
 #   Split test signal, check if every fragment has a somewhat corresponding fragment in the training data.
