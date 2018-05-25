@@ -9,10 +9,11 @@ from math import inf
 
 def determine_params_by_AIC(df, keys, train_frac):
     _, _, _, history, _ = prepare_data(df, keys, train_frac)
-    potential_p = range(int(0.05*len(history)))
+    potential_p = range(min(int(0.05*len(history)),11))
     best_p, best_q = 0, 0
     min_AIC = inf
     for i in potential_p:
+        print('Testing: %i' % i)
         model = ARMA(history, order=(i,0))
         model_fit = model.fit(disp=0)
         candidate_AIC = float(ARMAResults.summary(model_fit).tables[0].data[3][3])
@@ -40,13 +41,12 @@ all_keys = series.keys()
 # Select start and stop indices for a given data range.
 # (Set end to 8762 and start to 0 for all).
 start = 0
-end = 100
+end = 800
 
 key_for_prediction = 'L_T1'
 train_frac = 0.66
 
 series = select_data(series, series.keys(), start, end)
-
 p, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
 print('Best parameter combination: (p,q) = ('+str(p)+','+str(q)+')')
 
