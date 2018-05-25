@@ -4,7 +4,26 @@ from assignment2.select_data import *
 from assignment2.SAX import *
 from assignment2.NGram_methods import *
 from matplotlib import pyplot
+import pandas as pd
 import ngram as ng
+
+def get_PAA_sequence(df, key, ws):
+    sax = SAX(wordSize=ws)
+    res = sax.to_PAA(sax.normalize(df[key].values))
+    mean = np.mean(df[key].values)
+    std = np.std(df[key].values)
+    values = res[0]
+    tuples = res[1]
+    discretized_data = list()
+    for i in range(len(values)):
+        value = values[i]
+        tuple = tuples[i]
+        r = tuple[1] - tuple[0]
+        for i in range(r):
+            discretized_data.append(value)
+    discretized_data = [x*std for x in discretized_data]
+    discretized_data = [x + mean for x in discretized_data]
+    return pd.DataFrame(index=df.index, data=discretized_data)
 
 def parser(x):
     return datetime.strptime(x, '%d/%m/%y %H')
@@ -44,7 +63,7 @@ end = 8700
 
 # determine word size.
 size = float(end - start)
-window_size = 5.0
+window_size = 3.0
 wordsize = int(size/window_size)
 
 wordsizes = dict()
@@ -54,7 +73,10 @@ for k in series.keys():
 series = select_data(series, series.keys(), start, end)
 
 ngm = NGram_methods(series, wordsizes)
-print(ngm.dictionary)
+
+pyplot.plot(series['L_T1'])
+pyplot.plot(get_PAA_sequence(series, 'L_T1', wordsize))
+pyplot.show()
 
 series_malicious = read_csv('data/BATADAL_test_dataset.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
 signal = series_malicious[key].values
