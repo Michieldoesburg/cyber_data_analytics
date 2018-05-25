@@ -4,13 +4,6 @@ from matplotlib import pyplot
 from assignment2.predictors import *
 from assignment2.select_data import *
 
-
-def get_corrs(df):
-    col_correlations = df.corr()
-    col_correlations.loc[:, :] = np.tril(col_correlations, k=-1)
-    cor_pairs = col_correlations.stack()
-    return cor_pairs.to_dict()
-
 def parser(x):
     return datetime.strptime(x, '%d/%m/%y %H')
 
@@ -39,6 +32,7 @@ series = select_data(series, keys, start, end)
 # series.plot()
 print(series.corr())
 
+pyplot.subplot(1, 2, 1)
 handles = list()
 for i in keys:
     l, = pyplot.plot(series[i], label=i)
@@ -46,4 +40,22 @@ for i in keys:
 
 pyplot.legend(handles, keys)
 
+pyplot.subplot(1, 2, 2)
+handles = list()
+keys_plot2 = list()
+keys = ['L_T1', 'F_PU1', 'P_J302']
+
+# Make predictions.
+for k in keys:
+    predicted_data, actual_data = predict_data_arma(series, k, 0.66, 5, 0)
+    label_predict = k + ' (Predicted)'
+    label_actual = k + ' (Actual)'
+    l, = pyplot.plot(predicted_data, label=label_predict)
+    handles.append(l)
+    l, = pyplot.plot(actual_data, label=label_actual)
+    handles.append(l)
+    keys_plot2.append(label_predict)
+    keys_plot2.append(label_actual)
+
+pyplot.legend(handles, keys_plot2)
 pyplot.show()
