@@ -8,6 +8,14 @@ import ngram as ng
 def parser(x):
     return datetime.strptime(x, '%d/%m/%y %H')
 
+def find_malicious_data(scores, mean, std):
+    potential_malicious_indices = list()
+    min_threshold = mean - 2.0*std
+    for i in scores.keys():
+        if scores[i] < min_threshold:
+            potential_malicious_indices.append(i)
+    return potential_malicious_indices
+
 key = 'F_PU1'
 
 # Read data.
@@ -35,9 +43,8 @@ print(ngm.dictionary)
 series_malicious = read_csv('data/BATADAL_test_dataset.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
 signal = series_malicious[key].values
 dict = ngm.analyze_signal(signal, key)
-print(dict)
 ngm.overview_scores(list(dict.values()))
-
-# Late night ideas for detecting attacks with this way:
-#   Split test signal, check if every fragment has a somewhat corresponding fragment in the training data.
-#   Compare entire string (might not be the best idea...)
+mean, std, _, _ = ngm.get_scores(list(dict.values()))
+malicious_indices = find_malicious_data(dict, mean, std)
+print('These parts of the signal might contain attacks:')
+print(malicious_indices)
