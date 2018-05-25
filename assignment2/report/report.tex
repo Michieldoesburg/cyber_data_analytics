@@ -1,6 +1,7 @@
 \documentclass[]{article}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{float}
 
 %opening
 \title{Assignment 2 CDA}
@@ -15,10 +16,21 @@ The dataset contains a total of 44 signals, with some being static values, other
 
 All the signals together seem to have little correlation. Some combinations of signals are reasonably correlated: e.g. L\_T3 and P\_J302 have a 0.42 correlation coefficient. Moreover, the signal P\_J302 in figure~\ref{correlation} looks cyclic. A cyclic signal like this is much easier to predict than a `random' signal, since there is a rough base model that it adheres to. This signal's values are within a clear band at about 2-6 on the Y-axis. In such a case it is very easy to come up with a basic anomaly detection technique: if the signal moves outside this band this would be a clear sign of an anomaly. 
 
-\begin{figure}
-
-\includegraphics[width=10cm,height=8cm]{./visuallizations/correlated_signals.png}.
-\label{correlation}
-\caption{Signals L\_T3 and P\_J302. The peaks are roughly aligned.}
+\begin{figure}[H]
+\begin{minipage}{.5\textwidth}
+  \includegraphics[width=0.8\linewidth, keepaspectratio]{./visuallizations/signals.png}
+  \caption{Visualization of some signals. The red and greens signals are partially discrete.}
+  \label{fig:test1}
+\end{minipage} %
+\begin{minipage}{.5\textwidth}
+  \includegraphics[width=0.8\linewidth, keepaspectratio]{./visuallizations/predictions.png}
+   \caption{ARMA predictions on some signals. The predictions work better on less chaotic signals.}
+  \label{fig:test2}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+  \includegraphics[width=2\linewidth, height=4cm]{./visuallizations/correlated_signals.png}.
+  \label{correlation}
+  \caption{Signals L\_T3 and P\_J302. The peaks are roughly aligned.}
+\end{minipage}%
 \end{figure}
 \end{document}
