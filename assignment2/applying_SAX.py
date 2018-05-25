@@ -3,6 +3,7 @@ from pandas import datetime
 from assignment2.select_data import *
 from assignment2.SAX import *
 from assignment2.NGram_methods import *
+from matplotlib import pyplot
 import ngram as ng
 
 def parser(x):
@@ -10,7 +11,7 @@ def parser(x):
 
 def find_malicious_data(scores, mean, std):
     potential_malicious_indices = list()
-    min_threshold = mean - 2.0*std
+    min_threshold = mean - 1.0*std
     for i in scores.keys():
         if scores[i] < min_threshold:
             potential_malicious_indices.append(i)
@@ -31,7 +32,7 @@ def combine_tuples(tuples):
             temp_tuple = new_tuple
     return res
 
-key = 'L_T1'
+key = 'F_PU2'
 
 # Read data.
 series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
