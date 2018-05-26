@@ -1,6 +1,7 @@
 from assignment2.io import read_csv_adapted
 import pandas as pd
 from sklearn.decomposition import PCA
+from matplotlib import pyplot
 
 key = 'F_PU2'
 
@@ -34,3 +35,6 @@ new_series = set_to_zero_mean(series)
 new_series.drop('ATT_FLAG', axis=1, inplace=True)
 
 decomposed_data = PCA_decompose(new_series, 2)
+
+pyplot.plot(decomposed_data[decomposed_data.columns][0:1000])
+pyplot.show()
