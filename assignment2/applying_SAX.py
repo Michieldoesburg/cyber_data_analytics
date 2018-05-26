@@ -30,7 +30,7 @@ def parser(x):
 
 def find_malicious_data(scores, mean, std):
     potential_malicious_indices = list()
-    min_threshold = mean - 1.0*std
+    min_threshold = max(mean - 3.0*std, 0.3)
     for i in scores.keys():
         if scores[i] < min_threshold:
             potential_malicious_indices.append(i)
