@@ -1,11 +1,9 @@
-from pandas import read_csv
-from pandas import datetime
 from assignment2.select_data import *
 from assignment2.SAX import *
 from assignment2.NGram_methods import *
 from matplotlib import pyplot
 import pandas as pd
-import ngram as ng
+from assignment2.io import read_csv_adapted
 
 def get_PAA_sequence(df, key, ws):
     sax = SAX(wordSize=ws)
@@ -24,9 +22,6 @@ def get_PAA_sequence(df, key, ws):
     discretized_data = [x*std for x in discretized_data]
     discretized_data = [x + mean for x in discretized_data]
     return pd.DataFrame(index=df.index, data=discretized_data)
-
-def parser(x):
-    return datetime.strptime(x, '%d/%m/%y %H')
 
 def find_malicious_data(scores, mean, std):
     potential_malicious_indices = list()
@@ -54,7 +49,7 @@ def combine_tuples(tuples):
 key = 'F_PU2'
 
 # Read data.
-series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
+series = read_csv_adapted('data/BATADAL_train_dataset_1.csv')
 
 # Select start and stop indices for a given data range.
 # (Set end to 8762 and start to 0 for all).
@@ -78,7 +73,7 @@ pyplot.plot(series['L_T1'])
 pyplot.plot(get_PAA_sequence(series, 'L_T1', wordsize))
 pyplot.show()
 
-series_malicious = read_csv('data/BATADAL_test_dataset.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
+series_malicious = read_csv_adapted('data/BATADAL_test_dataset.csv')
 signal = series_malicious[key].values
 dict = ngm.analyze_signal(signal, key)
 ngm.overview_scores(list(dict.values()))
