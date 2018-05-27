@@ -45,8 +45,11 @@ def generate_list_outliers(train_data, test_data, test_data_indices, clf):
 train_data = read_csv_adapted('data/BATADAL_train_dataset_1.csv')
 test_data = read_csv_adapted('data/BATADAL_test_dataset.csv')
 
-decomposed_train_data = set_zero_mean_decompose(train_data, 7, 'ATT_FLAG')
-decomposed_test_data = set_zero_mean_decompose(test_data, 7, [])
+# Eight principal components has been found to not detect too much anomalies for the isolation forest while still detecting some.
+principal_comps = 8
+
+decomposed_train_data = set_zero_mean_decompose(train_data, principal_comps, 'ATT_FLAG')
+decomposed_test_data = set_zero_mean_decompose(test_data, principal_comps, [])
 
 print('Generating outliers with the isolation forest model.')
 # Notes regarding parameters:
