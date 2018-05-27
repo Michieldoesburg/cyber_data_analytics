@@ -2,28 +2,49 @@ import ngram as ng
 from assignment2.SAX import *
 
 class NGram_methods(object):
-
+    """
+    This object provides an abstraction for performing n-gram based anomaly detection.
+    """
     def __init__(self, df, word_sizes):
+        """
+        The initiator builds discretized representations of all the signals in the data frame.
+        """
         self.dataframe = df
         self.wordsizes = word_sizes
         self.dictionary = dict()
         self.discretize_data()
 
     def discretize_data(self):
+        """
+        This function builds all the dicretizations and adds them to the dictionary variable.
+        """
         keys = self.dataframe.keys()
         for key in keys:
             vals = self.dataframe[key]
             self.dictionary[key] = self.apply_SAX(vals, key)[0]
 
     def analyze_signal(self, new_signal, new_signal_key):
+        """
+        Discretizes a new signal and compares it to the discretization
+        of the signal that is already stored.
+        """
         signal_discretized = self.apply_SAX(new_signal, new_signal_key)
         return self.apply_ngram_methods(signal_discretized, new_signal_key)
 
     def apply_SAX(self, signal, key):
+        """
+        Returns the SAX discretization of a single signal, with a word size as specified
+        in the wordsizes dictionary.
+        """
         sax = SAX(wordSize=self.wordsizes[key])
         return sax.to_letter_rep(signal)
 
     def apply_ngram_methods(self, discretized_new_signal, key):
+        """
+        Compares the discretized new signal with the corresponding original signal,
+        by analyzing for every segment of the new signal if there is a segment in
+        the original signal.
+        """
         discretized_original_signal = self.dictionary[key]
         ngram = ng.NGram()
         splits = list(ngram.split(discretized_original_signal))
@@ -39,6 +60,11 @@ class NGram_methods(object):
         return res
 
     def get_ngram_similarities(self, ngram, list_new):
+        """
+        Takes an NGram-object, with all the splits of the original signal,
+        and a list of splits from the new signal, and compares every split from
+        the new signal by searching for it in the object and appending the score.
+        """
         comparison_scores = list()
         for x in list_new:
             score = ngram.search(x)[0][1]
@@ -46,6 +72,9 @@ class NGram_methods(object):
         return comparison_scores
 
     def compare_complete_string(self, new_signal, new_signal_key):
+        """
+        This method compares a new complete string with the original corresponding discretized signal.
+        """
         discretized_new_signal = self.apply_SAX(new_signal, new_signal_key)
         discretized_original_signal = self.dictionary[new_signal_key]
         return ng.NGram.compare(discretized_new_signal, discretized_original_signal)

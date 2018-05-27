@@ -8,6 +8,9 @@ from assignment2.residual_error import *
 from math import inf
 
 def determine_params_by_AIC(df, keys, train_frac):
+    """
+    This function determines ideal p and q by using the AIC as a measure.
+    """
     _, _, _, history, _ = prepare_data(df, keys, train_frac)
     potential_p = range(9)
     potential_q = range(3)

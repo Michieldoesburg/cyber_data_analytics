@@ -6,6 +6,9 @@ import pandas as pd
 from assignment2.io import read_csv_adapted
 
 def get_PAA_sequence(df, key, ws):
+    """
+    This function takes a sequence, and outputs the PP-discretization of the sequence.
+    """
     sax = SAX(wordSize=ws)
     res = sax.to_PAA(sax.normalize(df[key].values))
     mean = np.mean(df[key].values)
@@ -24,6 +27,11 @@ def get_PAA_sequence(df, key, ws):
     return pd.DataFrame(index=df.index, data=discretized_data)
 
 def find_malicious_data(scores, mean, std):
+    """
+    This function takes the scores and checks if they are below the minimum threshold.
+    This threshold is the largest of either the mean minus three times the standard deviation,
+    or 0.3.
+    """
     potential_malicious_indices = list()
     min_threshold = max(mean - 3.0*std, 0.3)
     for i in scores.keys():
@@ -32,6 +40,12 @@ def find_malicious_data(scores, mean, std):
     return combine_tuples(potential_malicious_indices)
 
 def combine_tuples(tuples):
+    """
+    This function takes a list of tuples, and combines
+    these tuples if they have overlapping ranges. For example,
+    if the tuples (1, 5) and (3, 8) are in the list, the new list would contain a tuple
+    with values (1, 8)
+    """
     if len(tuples) == 0:
         return list()
     res = list()
@@ -69,8 +83,10 @@ series = select_data(series, series.keys(), start, end)
 
 ngm = NGram_methods(series, wordsizes)
 
-pyplot.plot(series['L_T1'])
-pyplot.plot(get_PAA_sequence(series, 'L_T1', wordsize))
+key = 'L_T1'
+
+pyplot.plot(series[key])
+pyplot.plot(get_PAA_sequence(series, key, wordsize))
 pyplot.show()
 
 series_malicious = read_csv_adapted('data/BATADAL_test_dataset.csv')
