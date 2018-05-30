@@ -53,7 +53,7 @@ start = 0
 end = 300
 
 key_for_prediction = 'L_T1'
-train_frac = 0.95
+train_frac = 0.66
 
 series = select_data(series, series.keys(), start, end)
 p, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
