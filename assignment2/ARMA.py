@@ -53,7 +53,7 @@ start = 0
 end = 300
 
 key_for_prediction = 'L_T1'
-train_frac = 0.66
+train_frac = 0.95
 
 series = select_data(series, series.keys(), start, end)
 p, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
@@ -66,10 +66,18 @@ pyplot.plot(actual_data)
 pyplot.subplot(1, 2, 2)
 error = get_residual_error(predicted_data_arma, actual_data)
 
-mean, stddev = get_mean_stddev(error)
+mean, stddev, abs_err = get_mean_stddev(error)
 lower = -mean - 3.0*stddev
 upper = mean + 3.0*stddev
 print('Lower bound: %.5f, upper bound: %.5f' % (lower, upper))
+
+attack_indices = list()
+for i in range(len(abs_err)):
+    if abs_err[i] > upper:
+        attack_indices.append(abs_err.index[i])
+
+print('Indices with potential attacks:')
+print(attack_indices)
 
 lower_bound, upper_bound = build_lower_upper_bounds(lower, upper, error.index)
 pyplot.plot(error)

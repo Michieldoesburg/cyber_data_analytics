@@ -15,7 +15,7 @@ def get_mean_stddev(error):
     abs_vals = np.absolute(vals)
     mean = np.mean(abs_vals)
     stddev = np.std(abs_vals)
-    return mean, stddev
+    return mean, stddev, abs_err
 
 def build_lower_upper_bounds(lower, upper, index):
     lower_list, upper_list = list(), list()
