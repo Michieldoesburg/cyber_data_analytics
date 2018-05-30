@@ -26,16 +26,16 @@ def get_PAA_sequence(df, key, ws):
     discretized_data = [x + mean for x in discretized_data]
     return pd.DataFrame(index=df.index, data=discretized_data)
 
-def find_malicious_data(scores, mean, std):
+def find_malicious_data(scores, mean, std, min):
     """
     This function takes the scores and checks if they are below the minimum threshold.
     This threshold is the largest of either the mean minus three times the standard deviation,
     or 0.3.
     """
     potential_malicious_indices = list()
-    min_threshold = max(mean - 3.0*std, 0.3)
+    min_threshold = max(mean - 3.0*std, min)
     for i in scores.keys():
-        if scores[i] < min_threshold:
+        if scores[i] <= min_threshold:
             potential_malicious_indices.append(i)
     return combine_tuples(potential_malicious_indices)
 
@@ -83,7 +83,7 @@ series = select_data(series, series.keys(), start, end)
 
 ngm = NGram_methods(series, wordsizes)
 
-key = 'L_T1'
+key = 'F_PU1'
 
 pyplot.plot(series[key])
 pyplot.plot(get_PAA_sequence(series, key, wordsize))
@@ -94,7 +94,7 @@ signal = series_malicious[key].values
 word_size_test = len(series_malicious[key])/window_size
 dict = ngm.analyze_signal(signal, word_size_test, key)
 ngm.overview_scores(list(dict.values()))
-mean, std, _, _ = ngm.get_scores(list(dict.values()))
-malicious_indices = find_malicious_data(dict, mean, std)
+mean, std, min, _ = ngm.get_scores(list(dict.values()))
+malicious_indices = find_malicious_data(dict, mean, std, min)
 print('These parts of the signal might contain attacks:')
 print(malicious_indices)
