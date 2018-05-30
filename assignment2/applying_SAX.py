@@ -26,6 +26,12 @@ def get_PAA_sequence(df, key, ws):
     discretized_data = [x + mean for x in discretized_data]
     return pd.DataFrame(index=df.index, data=discretized_data)
 
+def get_timestamps_from_tuples(tuples, timestamps):
+    res = list()
+    for t in tuples:
+        res.append((timestamps[t[0]], timestamps[t[1]]))
+    return res
+
 def find_malicious_data(scores, mean, std, min):
     """
     This function takes the scores and checks if they are below the minimum threshold.
@@ -96,5 +102,6 @@ dict = ngm.analyze_signal(signal, word_size_test, key)
 ngm.overview_scores(list(dict.values()))
 mean, std, min, _ = ngm.get_scores(list(dict.values()))
 malicious_indices = find_malicious_data(dict, mean, std, min)
-print('These parts of the signal might contain attacks:')
-print(malicious_indices)
+malicious_timestamps = get_timestamps_from_tuples(malicious_indices, series_malicious.index)
+print('These time periods might contain attacks:')
+print(malicious_timestamps)
