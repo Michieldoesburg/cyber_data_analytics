@@ -91,7 +91,8 @@ pyplot.show()
 
 series_malicious = read_csv_adapted('data/BATADAL_test_dataset.csv')
 signal = series_malicious[key].values
-dict = ngm.analyze_signal(signal, key)
+word_size_test = len(series_malicious[key])/window_size
+dict = ngm.analyze_signal(signal, word_size_test, key)
 ngm.overview_scores(list(dict.values()))
 mean, std, _, _ = ngm.get_scores(list(dict.values()))
 malicious_indices = find_malicious_data(dict, mean, std)

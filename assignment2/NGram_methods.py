@@ -23,13 +23,17 @@ class NGram_methods(object):
             vals = self.dataframe[key]
             self.dictionary[key] = self.apply_SAX(vals, key)[0]
 
-    def analyze_signal(self, new_signal, new_signal_key):
+    def analyze_signal(self, new_signal, new_word_size, new_signal_key):
         """
         Discretizes a new signal and compares it to the discretization
         of the signal that is already stored.
         """
-        signal_discretized = self.apply_SAX(new_signal, new_signal_key)
+        signal_discretized = self.apply_SAX_custom_wordsize(new_signal, new_word_size)
         return self.apply_ngram_methods(signal_discretized, new_signal_key)
+
+    def apply_SAX_custom_wordsize(self, signal, wordsize):
+        sax = SAX(wordSize=wordsize)
+        return sax.to_letter_rep(signal)
 
     def apply_SAX(self, signal, key):
         """

@@ -9,9 +9,7 @@ def get_residual_error(predicted, actual):
     return pd.DataFrame(diff, index)
 
 def get_mean_stddev(error):
-    print(error.values.T.shape)
     vals = error.values.T
-    print(vals)
     abs_vals = np.absolute(vals)
     mean = np.mean(abs_vals)
     stddev = np.std(abs_vals)

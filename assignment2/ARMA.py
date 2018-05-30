@@ -12,7 +12,7 @@ def determine_params_by_AIC(df, keys, train_frac):
     This function determines ideal p and q by using the AIC as a measure.
     """
     _, _, _, history, _ = prepare_data(df, keys, train_frac)
-    potential_p = range(7)
+    potential_p = range(8)
     potential_q = range(3)
     best_p, best_q = 0, 0
     min_AIC = inf
@@ -55,7 +55,7 @@ start = 0
 end = 300
 
 key_for_prediction = 'L_T1'
-train_frac = 0.95
+train_frac = 0.66
 
 series = select_data(series, series.keys(), start, end)
 p, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
@@ -74,9 +74,10 @@ upper = mean + 3.0*stddev
 print('Lower bound: %.5f, upper bound: %.5f' % (lower, upper))
 
 attack_indices = list()
-for i in range(len(abs_err)):
+for i in range(len(abs_err[0])):
     if abs_err[0][i] > upper:
-        attack_indices.append(abs_err.index[i])
+        print(error.index[i])
+        attack_indices.append(error.index[i])
 
 print('Indices with potential attacks:')
 print(attack_indices)
