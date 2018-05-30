@@ -85,9 +85,9 @@ ngm = NGram_methods(series, wordsizes)
 
 key = 'F_PU1'
 
-pyplot.plot(series[key])
-pyplot.plot(get_PAA_sequence(series, key, wordsize))
-pyplot.show()
+#pyplot.plot(series[key])
+#pyplot.plot(get_PAA_sequence(series, key, wordsize))
+#pyplot.show()
 
 series_malicious = read_csv_adapted('data/BATADAL_test_dataset.csv')
 signal = series_malicious[key].values
@@ -98,3 +98,10 @@ mean, std, min, _ = ngm.get_scores(list(dict.values()))
 malicious_indices = find_malicious_data(dict, mean, std, min)
 print('These parts of the signal might contain attacks:')
 print(malicious_indices)
+
+for x in malicious_indices:
+    pyplot.axvspan(x[0], int(x[0]+5), facecolor='0.2', alpha=0.5)
+
+pyplot.plot(signal)
+pyplot.plot()
+pyplot.show()
