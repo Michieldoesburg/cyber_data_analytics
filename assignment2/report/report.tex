@@ -12,26 +12,26 @@
 
 \maketitle
 \section{Familiarization with the data}
-The dataset contains a total of 44 signals, with some being static values, other being sinusoid signals, and others being partially discrete (as in, they can rise or drop at certain points). L-signals tend to be more sinusoidal, F-signals tend to be "partially discrete", and S-signals are all binary signals.
+The dataset contains a total of 44 signals, with some being static values, other being sinusoid signals, and others being partially discrete (as in, they can rise or drop at certain points). L-signals tend to be more sinusoidal, F-signals tend to be "partially discrete", and S-signals are all binary signals. Figure 1 shows some of the signals, while figure 2 also shows the ARMA predictions for these signals. As can be seen from figure 1, some signals are strongly correlated, especially F\_PU1 and F\_PU2, which have a correlation of almost -1. Figure 2 also shows that ARMA performs better predicting the more sinusoidal signals, as the prediction for L\_T1 is significantly better than the prediction for the other two signals.
 
-All the signals together seem to have little correlation. Some combinations of signals are reasonably correlated: e.g. L\_T3 and P\_J302 have a 0.42 correlation coefficient. Moreover, the signal P\_J302 in figure~\ref{correlation} looks cyclic. A cyclic signal like this is much easier to predict than a `random' signal, since there is a rough base model that it adheres to. This signal's values are within a clear band at about 2-6 on the Y-axis. In such a case it is very easy to come up with a basic anomaly detection technique: if the signal moves outside this band this would be a clear sign of an anomaly. Plotting the mean error we saw for the ARMA prediction on signal L\_T1, we saw that there were only 2 cases were the error was greater than three times the standard deviation. 
+% All the signals together seem to have little correlation. Some combinations of signals are reasonably correlated: e.g. L\_T3 and P\_J302 have a 0.42 correlation coefficient. Moreover, the signal P\_J302 in figure~\ref{correlation} looks cyclic. A cyclic signal like this is much easier to predict than a `random' signal, since there is a rough base model that it adheres to. This signal's values are within a clear band at about 2-6 on the Y-axis. In such a case it is very easy to come up with a basic anomaly detection technique: if the signal moves outside this band this would be a clear sign of an anomaly. Plotting the mean error we saw for the ARMA prediction on signal L\_T1, we saw that there were only 2 cases were the error was greater than three times the standard deviation. 
 
 \begin{figure}[H]
 \begin{minipage}{.5\textwidth}
-  \includegraphics[width=0.8\linewidth, height=3cm]{./visuallizations/signals.png}
+  \includegraphics[width=0.8\linewidth, height=4cm]{./visuallizations/signals.png}
   \caption{Visualization of some signals. The red and greens signals are partially discrete.}
   \label{signals}
 \end{minipage} %
 \begin{minipage}{.5\textwidth}
-  \includegraphics[width=0.8\linewidth, height=3cm]{./visuallizations/predictions.png}
+  \includegraphics[width=0.8\linewidth, height=4cm]{./visuallizations/predictions.png}
    \caption{ARMA predictions on some signals. The predictions work better on signals.with less variance}
   \label{predictions}
 \end{minipage}
-\begin{minipage}{.5\textwidth}
-  \includegraphics[width=2\linewidth, height=3.5cm]{./visuallizations/correlated_signals.png}.
-  \label{correlation}
-  \caption{Signals L\_T3 and P\_J302. The peaks are roughly aligned.}
-\end{minipage}%
+%\begin{minipage}{.5\textwidth}
+  %\includegraphics[width=2\linewidth, height=3.5cm]{./visuallizations/correlated_signals.png}.
+  %\label{correlation}
+  %\caption{Signals L\_T3 and P\_J302. The peaks are roughly aligned.}
+%\end{minipage}%
 \end{figure}
 \clearpage
 \section{ARMA}
