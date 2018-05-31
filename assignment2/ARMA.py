@@ -1,10 +1,9 @@
-from pandas import read_csv
-from pandas import datetime
 from matplotlib import pyplot
 from assignment2.predictors import *
 from statsmodels.tsa.arima_model import ARMAResults
 from assignment2.select_data import *
 from assignment2.residual_error import *
+from assignment2.io import *
 from math import inf
 
 def determine_params_by_AIC(df, keys, train_frac):
@@ -33,11 +32,8 @@ def determine_params_by_AIC(df, keys, train_frac):
                 pass
     return best_p, best_q
 
-def parser(x):
-    return datetime.strptime(x, '%d/%m/%y %H')
-
 # Read data.
-series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
+series = read_csv_adapted('data/BATADAL_train_dataset_1.csv')
 all_keys = series.keys()
 
 # Select keys that you want to analyze.
@@ -55,7 +51,7 @@ start = 0
 end = 300
 
 key_for_prediction = 'L_T1'
-train_frac = 0.66
+train_frac = 0.33
 
 series = select_data(series, series.keys(), start, end)
 p, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
@@ -76,10 +72,9 @@ print('Lower bound: %.5f, upper bound: %.5f' % (lower, upper))
 attack_indices = list()
 for i in range(len(abs_err[0])):
     if abs_err[0][i] > upper:
-        print(error.index[i])
-        attack_indices.append(error.index[i])
+        attack_indices.append(error.index[i].strftime('%d-%m-%Y %H:00:00'))
 
-print('Indices with potential attacks:')
+print('Times with potential attacks:')
 print(attack_indices)
 
 lower_bound, upper_bound = build_lower_upper_bounds(lower, upper, error.index)
