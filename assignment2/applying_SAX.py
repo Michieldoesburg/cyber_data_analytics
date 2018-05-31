@@ -34,9 +34,9 @@ def get_timestamps_from_tuples(tuples, timestamps):
 
 def find_malicious_data(scores, mean, std, min):
     """
-    This function takes the scores and checks if they are below the minimum threshold.
+    This function takes the scores and checks if they are at or below the minimum threshold.
     This threshold is the largest of either the mean minus three times the standard deviation,
-    or 0.3.
+    or the minimum score obtained by a split.
     """
     potential_malicious_indices = list()
     min_threshold = max(mean - 3.0*std, min)
@@ -87,11 +87,11 @@ series = select_data(series, series.keys(), start, end)
 
 ngm = NGram_methods(series, wordsizes)
 
-key = 'P_J422'
+key = 'F_PU1'
 
-pyplot.plot(series[key])
+#pyplot.plot(series[key])
 #pyplot.plot(get_PAA_sequence(series, key, wordsize))
-pyplot.show()
+#pyplot.show()
 
 # These keys have been successfully tested to not generate errors.
 # keys = ['F_PU1', 'F_PU2', 'S_PU2', 'F_PU4', 'F_PU5', 'S_PU5', 'F_PU6', 'S_PU6', 'F_PU7', 'S_PU7', 'F_PU8', 'S_PU8', 'F_PU9', 'S_PU9', 'F_PU10', 'S_PU10', 'F_PU11', 'S_PU11', 'F_V2', 'S_V2',
@@ -105,11 +105,9 @@ ngm.overview_scores(list(dict.values()))
 mean, std, min, _ = ngm.get_scores(list(dict.values()))
 malicious_indices = find_malicious_data(dict, mean, std, min)
 
-print('These parts of the signal might contain attacks:')
-print(malicious_indices)
-
+# This plots a grey area over the detected malicious time periods.
 for x in malicious_indices:
-    pyplot.axvspan(x[0], int(x[0]+5), facecolor='0.2', alpha=0.5)
+    pyplot.axvspan(x[0], x[1], facecolor='0.2', alpha=0.5)
 
 
 malicious_timestamps = get_timestamps_from_tuples(malicious_indices, series_malicious.index)

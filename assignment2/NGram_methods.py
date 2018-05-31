@@ -50,6 +50,9 @@ class NGram_methods(object):
         the original signal.
         """
         discretized_original_signal = self.dictionary[key]
+        # We used standard parameters for the NGram object. We played around with the parameter N (the length of the
+        # splits of the string), but playing around with it caused us to miss some clear anomalies while not catching
+        # the ones that we wanted to catch, and also gave errors in running the code.
         ngram = ng.NGram()
         splits = list(ngram.split(discretized_original_signal))
         for x in splits:
