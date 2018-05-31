@@ -34,7 +34,7 @@ def generate_list_outliers(train_data, test_data, test_data_indices, clf):
     outlier_indices = list()
     for i in range(len(predictions)):
         if predictions[i] == -1:
-            outlier_indices.append(test_data_indices[i])
+            outlier_indices.append(test_data_indices[i].strftime('%d-%m-%Y %H:00:00'))
 
     return outlier_indices
 

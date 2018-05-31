@@ -11,7 +11,7 @@ def determine_params_by_AIC(df, keys, train_frac):
     This function determines ideal p and q by using the AIC as a measure.
     """
     _, _, _, history, _ = prepare_data(df, keys, train_frac)
-    potential_p = range(8)
+    potential_p = range(4)
     potential_q = range(3)
     best_p, best_q = 0, 0
     min_AIC = inf
@@ -46,18 +46,22 @@ all_keys = series.keys()
 # keys = ['S_PU1', 'S_PU2', 'S_PU3', 'S_PU4', 'S_PU5', 'S_PU6', 'S_PU7', 'S_PU8', 'S_PU9']
 
 # Select start and stop indices for a given data range.
-# (Set end to 8762 and start to 0 for all).
+# (Set end to 8761 and start to 0 for all).
 start = 0
-end = 300
+end = 500
 
 key_for_prediction = 'L_T1'
-train_frac = 0.33
+train_frac = 1.0
 
 series = select_data(series, series.keys(), start, end)
 p, q = determine_params_by_AIC(series, key_for_prediction, train_frac)
 print('Best parameter combination: (p,q) = ('+str(p)+','+str(q)+')')
 
-predicted_data_arma, actual_data = predict_data_arma(series, key_for_prediction, train_frac, p, q)
+series_test = read_csv_adapted('data/BATADAL_test_dataset.csv')
+
+# Note on the size of the initial history:
+#   - 30 was chosen as to limit the amount of records that would not be predicted.
+predicted_data_arma, actual_data = predict_data_arma_indexed(series_test, key_for_prediction, 30, p, q)
 pyplot.subplot(1, 2, 1)
 pyplot.plot(predicted_data_arma,color='red')
 pyplot.plot(actual_data)
