@@ -5,8 +5,6 @@ from sklearn.ensemble import IsolationForest
 from sklearn.svm import OneClassSVM
 from matplotlib import pyplot
 
-key = 'F_PU2'
-
 def set_to_zero_mean(df):
     data = []
     index = df.index
@@ -50,6 +48,10 @@ principal_comps = 8
 
 decomposed_train_data = set_zero_mean_decompose(train_data, principal_comps, 'ATT_FLAG')
 decomposed_test_data = set_zero_mean_decompose(test_data, principal_comps, [])
+
+# Plot of PCA residuals of training set.
+pyplot.plot(decomposed_train_data[decomposed_train_data.columns][0:1000])
+pyplot.show()
 
 print('Generating outliers with the isolation forest model.')
 # Notes regarding parameters:
