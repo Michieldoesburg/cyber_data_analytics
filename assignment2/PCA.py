@@ -26,7 +26,7 @@ def PCA_decompose(df, comps, solver='auto'):
 def set_zero_mean_decompose(df, comps, keys_to_drop, solver='auto'):
     new_df = df
     new_df.drop(keys_to_drop, axis=1)
-    new_df = set_to_zero_mean(new_df)
+    # new_df = set_to_zero_mean(new_df)
     return PCA_decompose(new_df, comps, solver)
 
 def generate_list_outliers(train_data, test_data, test_data_indices, clf):
