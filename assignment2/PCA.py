@@ -24,7 +24,7 @@ def PCA_decompose(df, comps, solver='auto'):
     columns = ['Component %i' % x for x in range(1, comps + 1)]
     pca = PCA(n_components=comps, svd_solver=solver)
     new_data = pca.fit_transform(data)
-    return pd.DataFrame(index=index, data=new_data, columns=columns), normalize(pca.components_, axis=1, norm='l2')
+    return pd.DataFrame(index=index, data=new_data, columns=columns), normalize(pca.components_.T, axis=1, norm='l2')
 
 def set_zero_mean_decompose(df, comps, keys_to_drop, solver='auto'):
     new_df = df
@@ -47,7 +47,7 @@ train_data = read_csv_adapted('data/BATADAL_train_dataset_1.csv')
 test_data = read_csv_adapted('data/BATADAL_test_dataset.csv')
 
 # Eight principal components has been found to not detect too much anomalies for the isolation forest while still detecting some.
-principal_comps = 43
+principal_comps = 30
 
 decomposed_train_data, comps_train = set_zero_mean_decompose(train_data, principal_comps, 'ATT_FLAG')
 decomposed_test_data, comps_test = set_zero_mean_decompose(test_data, principal_comps, [])
