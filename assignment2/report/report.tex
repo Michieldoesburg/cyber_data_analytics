@@ -46,7 +46,7 @@ The script \texttt{ARMA.py} learns a ARMA model for any particular sensor. The p
 After the predictions are done, the predicted values are compared to the actual values. The difference between the two is used, and then the mean of the absolute values is computed, along with the standard deviation of the absolute values. An attack is detected if a predicted value differs from the actual value by more than the threshold, which is given by the absolute mean plus a number of times the standard deviation. We used mean absolute error instead of root mean squared error because the root mean squared error gives a larger weight to larger errors. The sensors that have cyclic time series can be modelled effectively by ARMA, and the anomalies that can be detected are contextual anomalies.
 \begin{center}
 \begin{figure}[H]
-  \includegraphics[width=16cm, height=5cm]{./visuallizations/arma_3stddev_LTU1.png}
+  \includegraphics[width=16cm, height=4.5cm]{./visuallizations/arma_3stddev_LTU1.png}
   \caption{The prediction for signal L\_TU1. On the left is the signal in blue versus the predicted signal in red. On the right are the residual errors and the threshold.}
   \label{signals}
 \end{figure}
@@ -64,7 +64,6 @@ The script \texttt{applying\_SAX.py} does not only apply SAX on the signals, but
   \caption{SAX and Ngrams applied to signal F\_PU1. The anomalous regions are highlighted in yellow.}
   \label{signals}
 \end{figure}
-
 
 \clearpage
 \section{PCA}
