@@ -71,6 +71,15 @@ upper = mean + 3.0*std
 lower = mean - 3.0*std
 
 low, up = build_lower_upper_bounds(lower, upper, test_data.index)
+anomalous_indices = list()
+for i in range(len(Cy2)):
+    val = Cy2[i]
+    if val < lower or val > upper:
+        anomalous_indices.append(test_data.index[i].strftime('%d-%m-%Y %H:00:00'))
+
+print('%i anomalies detected.' % len(anomalous_indices))
+print('These timestamps contain anomalies:')
+print(anomalous_indices)
 
 # Plot of PCA residuals of training set.
 pyplot.plot(pd.DataFrame(data=Cy2, index=test_data.index))
