@@ -50,7 +50,7 @@ decomposed_train_data = set_zero_mean_decompose(train_data, principal_comps, 'AT
 decomposed_test_data = set_zero_mean_decompose(test_data, principal_comps, [])
 
 # Plot of PCA residuals of training set.
-pyplot.plot(decomposed_train_data[decomposed_train_data.columns][0:1000])
+pyplot.plot(decomposed_train_data[decomposed_train_data.columns][0:300])
 pyplot.show()
 
 print('Generating outliers with the isolation forest model.')

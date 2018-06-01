@@ -21,18 +21,18 @@ All the signals together seem to have little correlation. Some combinations of s
 
 \begin{center}
 \begin{figure}[H]
-\begin{minipage}{.5\textwidth}
-  \includegraphics[width=1\linewidth, height=3cm]{./visuallizations/signals.png}
-  \caption{Visualization of some signals. The red and greens signals are partially discrete.}
+\begin{minipage}{.475\textwidth}
+  \includegraphics[width=1\linewidth, height=4.5cm]{./visuallizations/signals.png}
+  \caption{Visualization of some signals. The red and green signals are partially discrete.}
   \label{signals}
 \end{minipage} %
-\begin{minipage}{.5\textwidth}
-  \includegraphics[width=1\linewidth, height=3cm]{./visuallizations/predictions.png}
+\begin{minipage}{.475\textwidth}
+  \includegraphics[width=1\linewidth, height=4.5cm]{./visuallizations/predictions.png}
    \caption{ARMA predictions on some signals. The predictions work better on signals with fewer rapid changes.}
   \label{predictions}
 \end{minipage}
-\begin{minipage}{.5\textwidth}
-  \includegraphics[width=2\linewidth, height=3.5cm]{./visuallizations/correlated_signals.png}.
+\begin{minipage}{\textwidth}
+  \includegraphics[width=1\linewidth, height=4cm]{./visuallizations/correlated_signals.png}.
   \label{correlation}
   \caption{Signals L\_T3 and P\_J302. The peaks are roughly aligned. These signals have around 40\% correlation.}
 \end{minipage}%
@@ -47,7 +47,7 @@ After the predictions are done, the predicted values are compared to the actual 
 \begin{center}
 \begin{figure}[H]
   \includegraphics[width=16cm, height=5cm]{./visuallizations/arma_3stddev_LTU1.png}
-  \caption{Signal LTU1. On the left is the signal in blue versus the predicted signal in red. On the right are the residual errors and the threshold, the threshold is 3 times the standard deviation.}
+  \caption{The prediction for signal L\_TU1. On the left is the signal in blue versus the predicted signal in red. On the right are the residual errors and the threshold.}
   \label{signals}
 \end{figure}
 \end{center}
@@ -58,9 +58,16 @@ For this task, we used the SAX method as shown in class. The script \texttt{SAX.
 The script \texttt{applying\_SAX.py} does not only apply SAX on the signals, but also applies the N-grams data mining method to find anomalies. An N-gram is anomalous (and possibly an indicator of an attack) if the score is lower than either the mean score minus three times the standard deviation, or 0.3, whichever is higher. The 0.3 was chosen to prevent the score boundary from becoming negative. It is rather rare to have that happen on this data though, as having large word sizes allows us to have a mean score of around 0.98 for most signals with a standard deviation of about 0.2. The sensors that do not have cyclic time series can be modelled effectively by SAX, and the anomalies that can be detected are collective anomalies.
 \clearpage
 \section{PCA}
-For this task, we first transformed the dataset using PCA. We do not normalize the signals as some signals have a standard deviation of 0, and working around this by dividing the time series only when the standard deviation is non-zero, or by discarding the signals from the dataframe that have a standard deviation of 0, causes the isolation forest to not detect anything at all any more. This does have the side effect that the first principal component will dominate the calculation of the residuals. The procedure can be found in the script \texttt{PCA.py}. We used the PCA implementation in Scikit-learn because we use Python as our platform. After the dataset was transformed, we could perform outlier detection. Scikit-learn also has several methods for that: one-class SVM, isolation forest, elliptic envelope, and local outlier factor. We decided to use the methods shown in class, which were the one-class SVM and the isolation forest. The isolation forest model finds significantly less anomalies than the one-class SVM model, possibly making the isolation forest model better in this case.
+For this task, we first transformed the dataset using PCA. We do not normalize the signals as some signals have a standard deviation of 0, and working around this by dividing the time series only when the standard deviation is non-zero, or by discarding the signals from the dataframe that have a standard deviation of 0, causes the isolation forest to not detect anything at all any more. This does have the side effect that the first principal component will dominate the calculation of the residuals. The procedure can be found in the script \texttt{PCA.py}. We used the PCA implementation in Scikit-learn because we use Python as our platform. After the dataset was transformed, we could perform outlier detection. Scikit-learn also has several methods for that: one-class SVM, isolation forest, elliptic envelope, and local outlier factor. We decided to use the methods shown in class as we were familiar with them, which were the one-class SVM and the isolation forest. The isolation forest model finds significantly less anomalies than the one-class SVM model, possibly making the isolation forest model better in this case.
 
-The workflow is as follows: the models are first fitted on the transformed dataset that contains no attacks whatsoever (which is the first of the BATADAL training datasets). Then, predictions are made for the transformed test dataset. If an index is predicted to be an outlier, then the timestamp is stored in a list. TODO plot of PCA residuals. Using PCA, we can detect point anomalies.
+The workflow is as follows: the models are first fitted on the transformed dataset that contains no attacks whatsoever (which is the first of the BATADAL training datasets). Then, predictions are made for the transformed test dataset. If an index is predicted to be an outlier, then the timestamp is stored in a list. Figure 5 shows the residuals after transforming the data using eight principal components. Using PCA, we can detect point anomalies.
+\begin{center}
+	\begin{figure}[H]
+		\includegraphics[width=18cm, keepaspectratio]{./visuallizations/PCA_residuals.png}
+		\caption{The first 300 data points of the PCA residuals. We chose for eight principal components as that meant that we detected quite a few anomalies (between 70 and 80) with the isolation forest model, instead of more than 100 or none at all.}
+		\label{signals}
+	\end{figure}
+\end{center}
 \clearpage
 \section{Comparison} 
 
