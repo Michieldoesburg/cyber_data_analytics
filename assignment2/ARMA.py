@@ -12,7 +12,7 @@ def determine_params_by_AIC(df, keys, train_frac):
     """
     _, _, _, history, _ = prepare_data(df, keys, train_frac)
     potential_p = range(5)
-    potential_q = range(5)
+    potential_q = range(3)
     best_p, best_q = 0, 0
     min_AIC = inf
     for i in potential_p:
