@@ -87,7 +87,7 @@ series = select_data(series, series.keys(), start, end)
 
 ngm = NGram_methods(series, wordsizes)
 
-key = 'F_PU1'
+key = 'L_T2'
 
 #pyplot.plot(series[key])
 #pyplot.plot(get_PAA_sequence(series, key, wordsize))
