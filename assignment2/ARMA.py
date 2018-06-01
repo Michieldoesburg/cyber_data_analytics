@@ -11,8 +11,8 @@ def determine_params_by_AIC(df, keys, train_frac):
     This function determines ideal p and q by using the AIC as a measure.
     """
     _, _, _, history, _ = prepare_data(df, keys, train_frac)
-    potential_p = range(4)
-    potential_q = range(3)
+    potential_p = range(5)
+    potential_q = range(5)
     best_p, best_q = 0, 0
     min_AIC = inf
     for i in potential_p:
@@ -50,7 +50,7 @@ all_keys = series.keys()
 start = 0
 end = 500
 
-key_for_prediction = 'L_T1'
+key_for_prediction = 'F_PU1'
 train_frac = 1.0
 
 series = select_data(series, series.keys(), start, end)
