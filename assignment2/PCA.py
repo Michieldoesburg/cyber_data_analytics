@@ -7,6 +7,7 @@ from sklearn.preprocessing import normalize
 from matplotlib import pyplot
 import numpy as np
 from numpy import linalg as LA
+from assignment2.residual_error import build_lower_upper_bounds
 
 def set_to_zero_mean(df):
     data = []
@@ -46,37 +47,33 @@ def generate_list_outliers(train_data, test_data, test_data_indices, clf):
 train_data = read_csv_adapted('data/BATADAL_train_dataset_1.csv')
 test_data = read_csv_adapted('data/BATADAL_test_dataset.csv')
 
-# Eight principal components has been found to not detect too much anomalies for the isolation forest while still detecting some.
+# 30 principal components has been found to give a good signal where anomalies were clear.
 principal_comps = 30
 
 decomposed_train_data, comps_train = set_zero_mean_decompose(train_data, principal_comps, 'ATT_FLAG')
 decomposed_test_data, comps_test = set_zero_mean_decompose(test_data, principal_comps, [])
 
 P = comps_test
-print(P.shape)
-print(LA.norm(P, axis=1))
 P_P_T = np.dot(P, P.T)
-print(P_P_T.shape)
+amt = P_P_T.shape[0]
+I = np.identity(amt)
+C = np.subtract(I, P_P_T)
+
+y = test_data.values.T
+Cy = np.dot(C, y)
+
+Cy2 = LA.norm(Cy, axis=0)**2.0
+
+mean = np.mean(Cy2)
+std = np.std(Cy2)
+
+upper = mean + 3.0*std
+lower = mean - 3.0*std
+
+low, up = build_lower_upper_bounds(lower, upper, test_data.index)
 
 # Plot of PCA residuals of training set.
-pyplot.plot(decomposed_train_data[decomposed_train_data.columns][0:300])
+pyplot.plot(pd.DataFrame(data=Cy2, index=test_data.index))
+pyplot.plot(low,color='red')
+pyplot.plot(up,color='red')
 pyplot.show()
-
-print('Generating outliers with the isolation forest model.')
-# Notes regarding parameters:
-#   - Contamination set to 0, as training data does not contain any attacks.
-#   - max_samples set to all samples, as that provided more accurate results.
-outlier_indices = generate_list_outliers(decomposed_train_data.values, decomposed_test_data.values, decomposed_test_data.index, IsolationForest(contamination=0, max_samples=8761))
-print('Amount of outliers found: %i' % len(outlier_indices))
-print('List of outliers:')
-print(outlier_indices)
-print('Generating outliers with the one-class SVM model.')
-# Notes regarding parameters:
-#   - Kernel set to sigmoid, seems to be the best option from several that we tried.
-outlier_indices = generate_list_outliers(decomposed_train_data.values, decomposed_test_data.values, decomposed_test_data.index, OneClassSVM(kernel='sigmoid'))
-print('Amount of outliers found: %i' % len(outlier_indices))
-print('List of outliers:')
-print(outlier_indices)
-
-# pyplot.plot(decomposed_train_data[decomposed_train_data.columns][0:1000])
-# pyplot.show()
