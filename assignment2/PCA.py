@@ -3,7 +3,10 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.ensemble import IsolationForest
 from sklearn.svm import OneClassSVM
+from sklearn.preprocessing import normalize
 from matplotlib import pyplot
+import numpy as np
+from numpy import linalg as LA
 
 def set_to_zero_mean(df):
     data = []
@@ -21,7 +24,7 @@ def PCA_decompose(df, comps, solver='auto'):
     columns = ['Component %i' % x for x in range(1, comps + 1)]
     pca = PCA(n_components=comps, svd_solver=solver)
     new_data = pca.fit_transform(data)
-    return pd.DataFrame(index=index, data=new_data, columns=columns)
+    return pd.DataFrame(index=index, data=new_data, columns=columns), normalize(pca.components_, axis=1, norm='l2')
 
 def set_zero_mean_decompose(df, comps, keys_to_drop, solver='auto'):
     new_df = df
@@ -44,10 +47,16 @@ train_data = read_csv_adapted('data/BATADAL_train_dataset_1.csv')
 test_data = read_csv_adapted('data/BATADAL_test_dataset.csv')
 
 # Eight principal components has been found to not detect too much anomalies for the isolation forest while still detecting some.
-principal_comps = 8
+principal_comps = 43
 
-decomposed_train_data = set_zero_mean_decompose(train_data, principal_comps, 'ATT_FLAG')
-decomposed_test_data = set_zero_mean_decompose(test_data, principal_comps, [])
+decomposed_train_data, comps_train = set_zero_mean_decompose(train_data, principal_comps, 'ATT_FLAG')
+decomposed_test_data, comps_test = set_zero_mean_decompose(test_data, principal_comps, [])
+
+P = comps_test
+print(P.shape)
+print(LA.norm(P, axis=1))
+P_P_T = np.dot(P, P.T)
+print(P_P_T.shape)
 
 # Plot of PCA residuals of training set.
 pyplot.plot(decomposed_train_data[decomposed_train_data.columns][0:300])
