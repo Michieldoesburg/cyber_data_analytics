@@ -41,7 +41,7 @@ All the signals together seem to have little correlation. Some combinations of s
 
 \clearpage
 \section{ARMA}
-The script \texttt{ARMA.py} learns a ARMA model for any particular sensor. The parameters for the model are determined by testing out different $p$'s and $q$'s and then looking at the AIC value of the fitted model. A lower AIC means a better fit. Fitting the models takes quite some time, and as such the search space for parameters is limited. For $p$, only values in the range of $[0, 4]$ are tested, and for $q$, only values in the range of $[0, 2]$ are tested. Both these ranges are inclusive. We thought these ranges would still allow for a reasonable search space while limiting the time taken to search for the ideal parameters.
+The script \texttt{ARMA.py} learns a ARMA model for any particular sensor. The parameters for the model are determined by testing out different $p$'s and $q$'s on the training data and then looking at the AIC value of the fitted model. A lower AIC means a better fit. Fitting the models takes quite some time, and as such the search space for parameters is limited. For $p$, only values in the range of $[0, 4]$ are tested, and for $q$, only values in the range of $[0, 2]$ are tested. Both these ranges are inclusive. We thought these ranges would still allow for a reasonable search space while limiting the time taken to search for the ideal parameters. Predictions are then done on the test data, with the exception of the first 30 values in the signal, as these are used as initial values for ARMA to base predictions on.
 
 After the predictions are done, the predicted values are compared to the actual values. The difference between the two is used, and then the mean of the absolute values is computed, along with the standard deviation of the absolute values. An attack is detected if a predicted value differs from the actual value by more than the threshold, which is given by the absolute mean plus a number of times the standard deviation. We used mean absolute error instead of root mean squared error because the root mean squared error gives a larger weight to larger errors. The sensors that have cyclic time series can be modelled effectively by ARMA, and the anomalies that can be detected are contextual anomalies. Sensors that have rapid changes are less effectively modeled by ARMA, what can usually be seen is that the prediction lags behind the actual values, like in figure 2. 
 \begin{center}
@@ -51,7 +51,8 @@ After the predictions are done, the predicted values are compared to the actual 
   \label{signals}
 \end{figure}
 \end{center}
-When setting the threshold to 3 times the standard deviation we can see that there are a lot of detected anomalies. Looking at the signal, most of these are probably benign. The threshold might need to be set a little higher for this signal to weed out a few more (likely) false positives.
+% We can use this for the comparison part.
+% When setting the threshold to 3 times the standard deviation we can see that there are a lot of detected anomalies. Looking at the signal, most of these are probably benign. The threshold might need to be set a little higher for this signal to weed out a few more (likely) false positives.
 \section{Discrete models}
 For this task, we used the SAX method as shown in class. The script \texttt{SAX.py} is a script that can discretize a time series using SAX. The script was provided by Qin Lin, and we altered a few things to make it work with Python 3. Discretization of the signal in this way creates a representative string of characters of the signal, which allows us to perform sequential data mining methods on it. This is in contrast to PAA, which only discretizes the signal, which does not allow us to perform these data mining methods. Discretization by use of SAX makes sense as the signal values are now grouped by how much they differ from the mean of the signal. The window size determines how many mean values the signal will be converted to, and the amount of original data points used per mean. Using a very large window size will obviously result in a very rough approximation and much data loss, using a very small window size will simply approach the original data and be pointless. After some trial-and-error, we found a window size of 3 to work well. The alphabet size determines the range of possible discrete values the means will be mapped to. We did experiment with setting the alphabet size to different values, but this caused us to miss obvious anomalies that we detected earlier, so we just used the standard value of 7.
 
@@ -75,7 +76,18 @@ For this task, we first transformed the dataset using PCA. We do not normalize t
 \end{center}
 \clearpage
 \section{Comparison}
-Comparing the detection methods will be done as follows: the days on which an anomaly was detected by the PCA method will be used as a base to compare other methods with. Then, the other methods will be executed on all signals that are applicable to those methods, and we will count the amount of overlapping dates on which anomalies were detected. The PCA method was chosen as base because this method can be used to detect anomalies in all signals at once, whereas the other two methods can only be used to detect anomalies in one signal at a time.
+Comparing the detection methods will be done as follows: the days on which an anomaly was detected by the PCA method will be used as a base to compare other methods with. Then, the other methods will be executed on all signals that are applicable to those methods, and we will count the amount of overlapping dates on which anomalies were detected. Overlapping dates will count as true positives while non-overlapping dates will count as false positives. The PCA method was chosen as base because this method can be used to detect anomalies in all signals at once, whereas the other two methods can only be used to detect anomalies in one signal at a time. We will also use the other methods to check if PCA does not miss some clear anomalies (such as the one in figure 5).
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		Method         & True positives & False positives & \begin{tabular}[c]{@{}l@{}}Clear anomalies not \\ detected by PCA\end{tabular} \\ \hline
+		ARMA           &                &                 &                                                                                \\ \hline
+		Discretization & 28               & 116                & 4                                                                               \\ \hline
+	\end{tabular}
+	\caption{My caption}
+	\label{my-label}
+\end{table}
 \clearpage
 \bibliography{bibliography}
 \bibliographystyle{unsrt}

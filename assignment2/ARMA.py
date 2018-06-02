@@ -50,7 +50,7 @@ all_keys = series.keys()
 start = 0
 end = 500
 
-key_for_prediction = 'F_PU1'
+key_for_prediction = 'L_T2'
 train_frac = 1.0
 
 series = select_data(series, series.keys(), start, end)
@@ -78,6 +78,7 @@ for i in range(len(abs_err[0])):
     if abs_err[0][i] > upper:
         attack_indices.append(error.index[i].strftime('%d-%m-%Y %H:00:00'))
 
+print('Amount of potential attacks found: %i' % len(attack_indices))
 print('Times with potential attacks:')
 print(attack_indices)
 

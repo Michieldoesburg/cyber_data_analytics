@@ -87,7 +87,7 @@ series = select_data(series, series.keys(), start, end)
 
 ngm = NGram_methods(series, wordsizes)
 
-key = 'L_T2'
+key = 'P_J256'
 
 #pyplot.plot(series[key])
 #pyplot.plot(get_PAA_sequence(series, key, wordsize))
@@ -107,7 +107,7 @@ malicious_indices = find_malicious_data(dict, mean, std, min)
 
 # This plots a grey area over the detected malicious time periods.
 for x in malicious_indices:
-    pyplot.axvspan(x[0], x[1], facecolor='0.2', alpha=0.5)
+    pyplot.axvspan(x[0], x[1], facecolor='y', alpha=0.5)
 
 
 malicious_timestamps = get_timestamps_from_tuples(malicious_indices, series_malicious.index)
