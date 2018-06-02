@@ -76,19 +76,22 @@ For this task, we first transformed the dataset using PCA. We do not normalize t
 \end{center}
 \clearpage
 \section{Comparison}
-Comparing the detection methods will be done as follows: the days on which an anomaly was detected by the PCA method will be used as a base to compare other methods with. Then, the other methods will be executed on all signals that are applicable to those methods, and we will count the amount of overlapping dates on which anomalies were detected. Overlapping dates will count as true positives while non-overlapping dates will count as false positives. The PCA method was chosen as base because this method can be used to detect anomalies in all signals at once, whereas the other two methods can only be used to detect anomalies in one signal at a time. We will also use the other methods to check if PCA does not miss some clear anomalies (such as the one in figure 5).
+Comparing the detection methods will be done as follows: the days on which an anomaly was detected by the PCA method will be used as a base to compare other methods with. Then, the other methods will be executed on all signals that are applicable to those methods, and we will count the amount of overlapping dates on which anomalies were detected. Overlapping dates will count as true positives while non-overlapping dates will count as false positives. The PCA method was chosen as base because this method can be used to detect anomalies in all signals at once, whereas the other two methods can only be used to detect anomalies in one signal at a time. We will also use the other methods to check if PCA does not miss some anomalies that can be observed quite clearly to be actual anomalies (such as the one in figure 5), as well as check how many of the PCA-detected dates were detected at least once to contain an anomaly by the other two methods. These last two are meant to cross validate detected anomalies across methods. The results are shown in table 1.
 \begin{table}[h!]
 	\centering
-	\begin{tabular}{|c|c|c|c|}
+	\begin{tabular}{|c|c|c|c|c|}
 		\hline
-		Method         & True positives & False positives & \begin{tabular}[c]{@{}l@{}}Clear anomalies not \\ detected by PCA\end{tabular} \\ \hline
-		ARMA           &                &                 &                                                                                \\ \hline
-		Discretization & 28               & 116                & 4                                                                               \\ \hline
+		Method         & True positives & False positives & \begin{tabular}[c]{@{}c@{}}Clear anomalies not \\ detected by PCA\end{tabular} & \begin{tabular}[c]{@{}c@{}}Amount of dates with detected \\ anomalies that PCA also detected\\ to contain an anomaly\end{tabular} \\ \hline
+		ARMA           & 8              & 120             & 2                                                                              & 5                                                                                                                                 \\ \hline
+		Discretization & 28             & 116             & 4                                                                              & 7                                                                                                                                 \\ \hline
 	\end{tabular}
-	\caption{My caption}
+	\caption{comparing ARMA and discretization with PCA.}
 	\label{my-label}
-\end{table}
-\clearpage
+\end{table}\\
+\\
+As can be seen from the results, PCA misses very few anomalies that are picked up by either of the two methods, and in general these are anomalies that relate to only one signal. The dates with false positives (according to the definition of false positives given in this section) were also checked manually, and did not contain signal fragments that were really different from the rest of the signal. Aside from this, PCA tends to detect very few anomalies compared to the other two methods, and in general the anomalies that it does pick up are picked up by the other two methods as well. In the field of cyber security, this is in general better than detecting more anomalies along with detecting more false positives, because each false positive warrants a unnecessary research. As such, we recommend PCA-based anomaly detection.
+\section{Link to our Github repo}
+All code can be found on \url{https://github.com/Michieldoesburg/cyber_data_analytics}. The code for this assignment is, of course, in the \texttt{assignment2} folder.
 \bibliography{bibliography}
 \bibliographystyle{unsrt}
 \end{document}
