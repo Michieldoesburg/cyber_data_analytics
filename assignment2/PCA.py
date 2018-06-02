@@ -48,6 +48,7 @@ test_data = read_csv_adapted('data/BATADAL_test_dataset.csv')
 principal_comps = 30
 decomposed_test_data, comps_test = set_zero_mean_decompose(test_data, principal_comps, [])
 
+# Variables are named as in the paper.
 P = comps_test
 P_P_T = np.dot(P, P.T)
 amt = P_P_T.shape[0]
