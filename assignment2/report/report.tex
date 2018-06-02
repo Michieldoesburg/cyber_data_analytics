@@ -46,7 +46,7 @@ The script \texttt{ARMA.py} learns a ARMA model for any particular sensor. The p
 After the predictions are done, the predicted values are compared to the actual values. The difference between the two is used, and then the mean of the absolute values is computed, along with the standard deviation of the absolute values. An attack is detected if a predicted value differs from the actual value by more than the threshold, which is given by the absolute mean plus a number of times the standard deviation. We used mean absolute error instead of root mean squared error because the root mean squared error gives a larger weight to larger errors. The sensors that have cyclic time series can be modelled effectively by ARMA, and the anomalies that can be detected are contextual anomalies. Sensors that have rapid changes are less effectively modeled by ARMA, what can usually be seen is that the prediction lags behind the actual values, like in figure 2. 
 \begin{center}
 \begin{figure}[H]
-  \includegraphics[width=16cm, height=4.5cm]{./visuallizations/arma_3stddev_LTU1.png}
+  \includegraphics[width=16cm, height=3.5cm]{./visuallizations/arma_3stddev_LTU1.png}
   \caption{The prediction for signal L\_TU1. On the left is the signal in blue versus the predicted signal in red. On the right are the residual errors and the threshold.}
   \label{signals}
 \end{figure}
@@ -55,29 +55,27 @@ When setting the threshold to 3 times the standard deviation we can see that the
 \section{Discrete models}
 For this task, we used the SAX method as shown in class. The script \texttt{SAX.py} is a script that can discretize a time series using SAX. The script was provided by Qin Lin, and we altered a few things to make it work with Python 3. Discretization of the signal in this way creates a representative string of characters of the signal, which allows us to perform sequential data mining methods on it. This is in contrast to PAA, which only discretizes the signal, which does not allow us to perform these data mining methods. Discretization by use of SAX makes sense as the signal values are now grouped by how much they differ from the mean of the signal. The window size determines how many mean values the signal will be converted to, and the amount of original data points used per mean. Using a very large window size will obviously result in a very rough approximation and much data loss, using a very small window size will simply approach the original data and be pointless. After some trial-and-error, we found a window size of 3 to work well. The alphabet size determines the range of possible discrete values the means will be mapped to. 
 
-The script \texttt{applying\_SAX.py} does not only apply SAX on the signals, but also applies the N-grams data mining method to find anomalies. An N-gram is anomalous (and possibly an indicator of an attack) if the score is lower than either the mean score minus three times the standard deviation, or 0.3, whichever is higher. The 0.3 was chosen to prevent the score boundary from becoming negative. It is rather rare to have that happen on this data though, as having large word sizes allows us to have a mean score of around 0.98 for most signals with a standard deviation of about 0.2. The sensors that do not have cyclic time series can be modelled effectively by SAX, and the anomalies that can be detected are collective anomalies, as can be seen in the visualization.
-
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=12cm, keepaspectratio]{./visuallizations/SAX_anomaly.png}
-  \caption{SAX and Ngrams applied to signal F\_PU1. The anomalous regions are highlighted in yellow.}
-  \label{signals}
-\end{figure}
-
+The script \texttt{applying\_SAX.py} does not only apply SAX on the signals, but also applies the N-grams data mining method to find anomalies. An N-gram is anomalous (and possibly an indicator of an attack) if the score is lower than or equal to either the mean score minus three times the standard deviation, or the minimum score, whichever is higher. The minimum scores was chosen to prevent the score boundary from becoming negative. It is rather rare to have that happen on this data though, as having large word sizes allows us to have a mean score of around 0.98 for most signals with a standard deviation of about 0.2. The sensors that do not have cyclic time series can be modelled effectively by SAX, and the anomalies that can be detected are collective anomalies, as can be seen in the visualization.
 \clearpage
 \section{PCA}
-For this task, we first transformed the dataset using PCA. We do not normalize the signals as some signals have a standard deviation of 0, and working around this by dividing the time series only when the standard deviation is non-zero, or by discarding the signals from the dataframe that have a standard deviation of 0, causes the isolation forest to not detect anything at all any more. This does have the side effect that the first principal component will dominate the calculation of the residuals. The procedure can be found in the script \texttt{PCA.py}. We used the PCA implementation in Scikit-learn because we use Python as our platform. After the dataset was transformed, we could perform outlier detection. Scikit-learn also has several methods for that: one-class SVM, isolation forest, elliptic envelope, and local outlier factor. We decided to use the methods shown in class as we were familiar with them, which were the one-class SVM and the isolation forest. The isolation forest model finds significantly less anomalies than the one-class SVM model, possibly making the isolation forest model better in this case.
-
-The workflow is as follows: the models are first fitted on the transformed dataset that contains no attacks whatsoever (which is the first of the BATADAL training datasets). Then, predictions are made for the transformed test dataset. If an index is predicted to be an outlier, then the timestamp is stored in a list. Figure 5 shows the residuals after transforming the data using eight principal components. Using PCA, we can detect point anomalies.
+For this task, we first transformed the dataset using PCA. We do not normalize the signals as some signals have a standard deviation of 0. This does have the side effect that the first principal component will dominate the calculation of the residuals. The procedure can be found in the script \texttt{PCA.py}. We used the PCA implementation in Scikit-learn because we use Python as our platform. After the dataset was transformed, we performed anomaly detection as described by Lakhina, Crovella and Diot\cite{lakhina2004diagnosing}. The code adheres as much as possible to the variable names used in the paper. A timestamp contains an attack if the squared prediction error is higher than the mean squared prediction error plus three times the standard deviation, or lower than the mean minus three times the standard deviation. A plot of the squared prediction error and the lower and upper bounds for anomalous behaviour is shown in figure 6. Using this method, we can detect point anomalies.
 \begin{center}
 	\begin{figure}[H]
-		\includegraphics[width=18cm, keepaspectratio]{./visuallizations/PCA_residuals.png}
-		\caption{The first 300 data points of the PCA residuals. We chose for eight principal components as that meant that we detected quite a few anomalies (between 70 and 80) with the isolation forest model, instead of more than 100 or none at all.}
-		\label{signals}
+		\begin{minipage}{.475\textwidth}
+			\includegraphics[width=1\linewidth, height=4.5cm]{./visuallizations/SAX_anomaly.png}
+			\caption{SAX and Ngrams applied to signal F\_PU1. The anomalous regions are highlighted in yellow.}
+			\label{predictions}
+		\end{minipage}
+		\begin{minipage}{.475\textwidth}
+			\includegraphics[width=1\linewidth, height=4.5cm]{./visuallizations/PCA_residuals.png}
+			\caption{the PCA residuals plotted as the squared prediction error}
+			\label{PCA}
+		\end{minipage} %
 	\end{figure}
 \end{center}
 \clearpage
-\section{Comparison} 
-
+\section{Comparison}
+\clearpage
+\bibliography{bibliography}
+\bibliographystyle{unsrt}
 \end{document}

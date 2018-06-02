@@ -1,8 +1,6 @@
 from assignment2.io import read_csv_adapted
 import pandas as pd
 from sklearn.decomposition import PCA
-from sklearn.ensemble import IsolationForest
-from sklearn.svm import OneClassSVM
 from sklearn.preprocessing import normalize
 from matplotlib import pyplot
 import numpy as np
@@ -44,13 +42,10 @@ def generate_list_outliers(train_data, test_data, test_data_indices, clf):
 
 
 # Read data.
-train_data = read_csv_adapted('data/BATADAL_train_dataset_1.csv')
 test_data = read_csv_adapted('data/BATADAL_test_dataset.csv')
 
 # 30 principal components has been found to give a good signal where anomalies were clear.
 principal_comps = 30
-
-decomposed_train_data, comps_train = set_zero_mean_decompose(train_data, principal_comps, 'ATT_FLAG')
 decomposed_test_data, comps_test = set_zero_mean_decompose(test_data, principal_comps, [])
 
 P = comps_test
