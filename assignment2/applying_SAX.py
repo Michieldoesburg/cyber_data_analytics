@@ -85,9 +85,10 @@ for k in series.keys():
 
 series = select_data(series, series.keys(), start, end)
 
+# Build a library of discretized signals without anomalies.
 ngm = NGram_methods(series, wordsizes)
 
-key = 'P_J256'
+key = 'F_PU1'
 
 #pyplot.plot(series[key])
 #pyplot.plot(get_PAA_sequence(series, key, wordsize))
@@ -97,6 +98,7 @@ key = 'P_J256'
 # keys = ['F_PU1', 'F_PU2', 'S_PU2', 'F_PU4', 'F_PU5', 'S_PU5', 'F_PU6', 'S_PU6', 'F_PU7', 'S_PU7', 'F_PU8', 'S_PU8', 'F_PU9', 'S_PU9', 'F_PU10', 'S_PU10', 'F_PU11', 'S_PU11', 'F_V2', 'S_V2',
 # 'P_J269', 'P_J300', 'P_J256', 'P_J289', 'P_J415', 'P_J302', 'P_J306', 'P_J307', 'P_J317', 'P_J14', 'P_J422']
 
+# Compare potentially anomalous signal with non-anomalous signals.
 series_malicious = read_csv_adapted('data/BATADAL_test_dataset.csv')
 signal = series_malicious[key].values
 word_size_test = len(series_malicious[key])/window_size
