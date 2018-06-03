@@ -59,3 +59,10 @@ for k in keys:
 
 pyplot.legend(handles, keys_plot2)
 pyplot.show()
+
+series = read_csv('data/BATADAL_train_dataset_1.csv', header=0, parse_dates=[0], index_col=0, date_parser=parser)
+keys = ['L_T3', 'P_J302']
+
+series = select_data(series, keys, start, end)
+pyplot.plot(series)
+pyplot.show()
