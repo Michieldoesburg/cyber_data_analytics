@@ -1,11 +1,13 @@
 import csv
-import countminsketch as cms
+import assignment3.countminsketch as cms
+from assignment3.utils import *
 
 file = "data\capture20110816-2.pcap.netflow.labeled"
 table_size = 1000
 hash_functions = 10
 ip_set = set()
 ip_amt = 0
+k = 10
 
 sketch = cms.CountMinSketch(table_size, hash_functions)
 
@@ -35,5 +37,13 @@ print('Stream reading done.')
 print('The file that was read can be found in %s' % file)
 print('There are %i destination IP addresses' % ip_amt)
 
+ip_dict = dict()
 for ip in ip_set:
-    print('IP address %s appears %i times.' % (ip, sketch[ip]))
+    ip_dict[ip] = sketch[ip]
+
+ip_dict = sort_dict_by_value(ip_dict, ip_amt)
+print('Total sketched frequencies, generated with table_size=%i and hash_functions=%i, sorted by value in descending order:' % (table_size, hash_functions))
+print(ip_dict)
+top_k = select_first_k(ip_dict, k)
+print('Top %i highest sketched frequencies:' % k)
+print(top_k)
