@@ -1,17 +1,14 @@
 import csv
-import sympy
-import random
-from assignment3.Hashfunction import Hashfunction
 from assignment3.min_wise_sample import MinWiseSample
 import queue as q
 
 addresses = []
-id_to_ip_map = dict()
 ip_freq = dict()
 ip_amt = 0
 reservoir_size = 10000
 k = 10
 sample = MinWiseSample(reservoir_size)
+file = "data\capture20110816-2.pcap.netflow.labeled"
 
 def sort_dict_by_value(freq, max_val):
     pq = q.PriorityQueue()
@@ -51,7 +48,7 @@ def keys_in_same_position(dict1, dict2):
 
 
 # Treat data as a stream.
-with open("data\capture20110816-2.pcap.netflow.labeled", "r") as f:
+with open(file, "r") as f:
     reader = csv.reader(f, delimiter=" ")
     for z, line in enumerate(reader):
         if z < 1:
@@ -86,6 +83,7 @@ total_freq_sorted = sort_dict_by_value(ip_freq, ip_amt)
 sampled_freq_sorted = sample.count_and_sort()
 
 print('Stream reading done.')
+print('The file that was read can be found in %s' % file)
 print('There are %i destination IP addresses' % ip_amt)
 
 print('Printing all frequencies:')
