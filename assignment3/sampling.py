@@ -1,10 +1,13 @@
 import csv
 import sympy
 import random
-from Hashfunction import Hashfunction
+from assignment3.Hashfunction import Hashfunction
+from assignment3.min_wise_sample import MinWiseSample
 
 addresses = []
 id_to_ip_map = dict()
+reservoir_size = 1000
+sample = MinWiseSample(reservoir_size)
 
 with open("data\capture20110816-2.pcap.netflow.labeled", "r") as f:
     reader = csv.reader(f, delimiter=" ")
@@ -23,9 +26,12 @@ with open("data\capture20110816-2.pcap.netflow.labeled", "r") as f:
 
                 # Filter the broadcasts and non-ip adresses
                 if (ip != "Broadcast") and (ip != "ff02"):
+                    sample.add(ip)
                     addresses.append(ip)
 
                 print(ip)
+
+print(sample.count_and_sort())
 
 max_id = 0
 
