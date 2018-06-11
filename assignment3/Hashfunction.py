@@ -1,4 +1,4 @@
-class hashfunction(object):
+class Hashfunction(object):
 
     def __init__(self, _a, _b, _mod):
         self.a = _a
