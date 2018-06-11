@@ -3,7 +3,7 @@ import assignment3.countminsketch as cms
 from assignment3.utils import *
 
 file = "data\capture20110816-2.pcap.netflow.labeled"
-table_size = 1000
+table_size = 50
 hash_functions = 10
 ip_set = set()
 ip_amt = 0
