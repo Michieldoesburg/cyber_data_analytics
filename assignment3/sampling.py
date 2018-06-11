@@ -79,7 +79,7 @@ with open("data\capture20110816-2.pcap.netflow.labeled", "r") as f:
                     ip_amt += 1
                     addresses.append(ip)
 
-                print(ip)
+                # print(ip)
 
 
 total_freq_sorted = sort_dict_by_value(ip_freq, ip_amt)
@@ -102,48 +102,3 @@ print(first_k_all)
 print('Top %i highest frequencies of the sampled frequencies:' % k)
 print(first_k_sampled)
 print('These last two sets have %i IP addresses in common, %i of which are in the same position' % (keys_in_common(first_k_all, first_k_sampled), keys_in_same_position(first_k_all, first_k_sampled)))
-
-
-max_id = 0
-
-### OLD CODE ###
-
-# Create id -> ip map and find max identifier
-for ip in addresses:
-    nums = ip.split(".")
-    identifier = ""
-    for arg in nums:
-        identifier += str(arg)
-
-    try:
-        identifier = int(identifier)
-
-        if identifier > max_id:
-            max_id = identifier
-
-        id_to_ip_map[identifier] = ip
-
-    except ValueError as e:
-        print(identifier)
-
-
-hashfunctions = []
-
-# Find a prime modulus for the hash functions bigger than the maximum identifier
-modulus = sympy.nextprime(max_id)
-
-# Generate the random hash functions
-for x in range(10):
-    a = random.randint(0, max_id-1)
-    b = random.randint(0, max_id-1)
-    hashfunctions.append(Hashfunction(a, b, modulus))
-
-
-# Compute the min hash for every identifier
-for id in id_to_ip_map.keys():
-    hashes = []
-
-    for hash_func in hashfunctions:
-        hashes.append(hash_func.compute(id))
-
-    min_hash = min(hashes)
