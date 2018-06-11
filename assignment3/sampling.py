@@ -1,4 +1,6 @@
 import csv
+import sympy
+import random
 from Hashfunction import Hashfunction
 
 addresses = []
@@ -19,7 +21,7 @@ with open("data\capture20110816-2.pcap.netflow.labeled", "r") as f:
                 # Split the IP address from the port number
                 ip = args[i+1].split(":")[0]
 
-                # Filter the broadcasts
+                # Filter the broadcasts and non-ip adresses
                 if (ip != "Broadcast") and (ip != "ff02"):
                     addresses.append(ip)
 
@@ -27,6 +29,7 @@ with open("data\capture20110816-2.pcap.netflow.labeled", "r") as f:
 
 max_id = 0
 
+# Create id -> ip map and find max identifier
 for ip in addresses:
     nums = ip.split(".")
     identifier = ""
@@ -47,7 +50,21 @@ for ip in addresses:
 
 hashfunctions = []
 
-print(max_id)
+# Find a prime modulus for the hash functions bigger than the maximum identifier
+modulus = sympy.nextprime(max_id)
 
-#for x in range(10):
-    #hashfunctions.append(Hashfunction())
+# Generate the random hash functions
+for x in range(10):
+    a = random.randint(0, max_id-1)
+    b = random.randint(0, max_id-1)
+    hashfunctions.append(Hashfunction(a, b, modulus))
+
+
+# Compute the min hash for every identifier
+for id in id_to_ip_map.keys():
+    hashes = []
+
+    for hash_func in hashfunctions:
+        hashes.append(hash_func.compute(id))
+
+    min_hash = min(hashes)
