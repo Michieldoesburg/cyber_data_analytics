@@ -3,12 +3,30 @@ import sympy
 import random
 from assignment3.Hashfunction import Hashfunction
 from assignment3.min_wise_sample import MinWiseSample
+import queue as q
 
 addresses = []
 id_to_ip_map = dict()
+ip_freq = dict()
+ip_amt = 0
 reservoir_size = 1000
 sample = MinWiseSample(reservoir_size)
 
+def sort_dict_by_value(freq, max_val):
+    pq = q.PriorityQueue()
+    for ip in freq:
+        # This is a trick to store frequencies in descending order:
+        # subtract the actual frequency of the maximum size of the sample.
+        pq.put((max_val - freq[ip], ip))
+    res = dict()
+    while not pq.empty():
+        x = pq.get()
+        # Apply correction to get the actual frequencies back.
+        res[x[1]] = max_val - x[0]
+    return res
+
+
+# Treat data as a stream.
 with open("data\capture20110816-2.pcap.netflow.labeled", "r") as f:
     reader = csv.reader(f, delimiter=" ")
     for z, line in enumerate(reader):
@@ -26,14 +44,28 @@ with open("data\capture20110816-2.pcap.netflow.labeled", "r") as f:
 
                 # Filter the broadcasts and non-ip adresses
                 if (ip != "Broadcast") and (ip != "ff02"):
+                    # Add to the min-wise sampling pool.
                     sample.add(ip)
+                    # Add to the frequency counter.
+                    if ip in ip_freq:
+                        ip_freq[ip] += 1
+                    else:
+                        ip_freq[ip] = 1
+                    # Increment the amount of IP's gathered. This is useful in the future.
+                    ip_amt += 1
                     addresses.append(ip)
 
                 print(ip)
 
+
+print('Total frequencies, sorted by value in descending order:')
+print(sort_dict_by_value(ip_freq, ip_amt))
+print('Frequencies of samples sampled by using min-wise sampling with a reservoir size of %i, sorted by value in descending order:' % reservoir_size)
 print(sample.count_and_sort())
 
 max_id = 0
+
+### OLD CODE ###
 
 # Create id -> ip map and find max identifier
 for ip in addresses:
