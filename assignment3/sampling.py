@@ -31,26 +31,20 @@ with open(file, "r") as f:
         date = line[0] + ' ' + new_args[0]
         p = packet(date, new_args[1], new_args[2], new_args[3], new_args[5], new_args[6], new_args[7], new_args[8], new_args[9], new_args[10], new_args[11])
 
-        for i, x in enumerate(args):
-            # We are interested in the ip address after the -> arrow.
-            if x == "->":
-                # Split the IP address from the port number
-                ip = args[i+1].split(":")[0]
+        ip = p.dst.split(":")[0]
 
-                # Filter the broadcasts and non-ip adresses
-                if (ip != "Broadcast") and (ip != "ff02"):
-                    # Add to the min-wise sampling pool.
-                    sample.add(ip)
-                    # Add to the frequency counter.
-                    if ip in ip_freq:
-                        ip_freq[ip] += 1
-                    else:
-                        ip_freq[ip] = 1
-                    # Increment the amount of IP's gathered. This is useful in the future.
-                    ip_amt += 1
-                    addresses.append(ip)
-
-                # print(ip)
+        # Filter the broadcasts and non-ip adresses
+        if (ip != "Broadcast") and (ip != "ff02"):
+            # Add to the min-wise sampling pool.
+            sample.add(ip)
+            # Add to the frequency counter.
+            if ip in ip_freq:
+                ip_freq[ip] += 1
+            else:
+                ip_freq[ip] = 1
+            # Increment the amount of IP's gathered. This is useful in the future.
+            ip_amt += 1
+            addresses.append(ip)
 
 
 total_freq_sorted = sort_dict_by_value(ip_freq, ip_amt)
