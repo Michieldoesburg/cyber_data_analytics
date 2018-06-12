@@ -1,6 +1,7 @@
 import csv
 from assignment3.min_wise_sample import MinWiseSample
 from assignment3.utils import *
+from assignment3.packet import *
 
 addresses = []
 ip_freq = dict()
@@ -9,6 +10,13 @@ reservoir_size = 10000
 k = 10
 sample = MinWiseSample(reservoir_size)
 file = "data\capture20110816-2.pcap.netflow.labeled"
+
+def remove_empty_strings(array):
+    res = []
+    for x in array:
+        if not x == '':
+            res.append(x)
+    return res
 
 # Treat data as a stream.
 with open(file, "r") as f:
@@ -19,6 +27,9 @@ with open(file, "r") as f:
 
         # Split the arguments in the line
         args = line[1].split("\t")
+        new_args = remove_empty_strings(args)
+        date = line[0] + ' ' + new_args[0]
+        p = packet(date, new_args[1], new_args[2], new_args[3], new_args[5], new_args[6], new_args[7], new_args[8], new_args[9], new_args[10], new_args[11])
 
         for i, x in enumerate(args):
             # We are interested in the ip address after the -> arrow.
