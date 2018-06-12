@@ -11,13 +11,6 @@ k = 10
 sample = MinWiseSample(reservoir_size)
 file = "data\capture20110816-2.pcap.netflow.labeled"
 
-def remove_empty_strings(array):
-    res = []
-    for x in array:
-        if not x == '':
-            res.append(x)
-    return res
-
 # Treat data as a stream.
 with open(file, "r") as f:
     reader = csv.reader(f, delimiter=" ")

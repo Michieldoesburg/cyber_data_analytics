@@ -35,3 +35,10 @@ def keys_in_same_position(dict1, dict2):
         if keys1[i] == keys2[i]:
             count += 1
     return count
+
+def remove_empty_strings(array):
+    res = []
+    for x in array:
+        if not x == '':
+            res.append(x)
+    return res

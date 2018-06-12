@@ -1,6 +1,7 @@
 import csv
 import assignment3.countminsketch as cms
 from assignment3.utils import *
+from assignment3.packet import *
 
 file = "data\capture20110816-2.pcap.netflow.labeled"
 table_size = 50
@@ -20,18 +21,18 @@ with open(file, "r") as f:
 
         # Split the arguments in the line
         args = line[1].split("\t")
+        new_args = remove_empty_strings(args)
+        date = line[0] + ' ' + new_args[0]
+        p = packet(date, new_args[1], new_args[2], new_args[3], new_args[5], new_args[6], new_args[7], new_args[8],
+                    new_args[9], new_args[10], new_args[11])
 
-        for i, x in enumerate(args):
-            # We are interested in the ip address after the -> arrow.
-            if x == "->":
-                # Split the IP address from the port number
-                ip = args[i+1].split(":")[0]
+        ip = p.dst.split(":")[0]
 
-                # Filter the broadcasts and non-ip adresses
-                if (ip != "Broadcast") and (ip != "ff02"):
-                    sketch.add(ip)
-                    ip_set.add(ip)
-                    ip_amt += 1
+        # Filter the broadcasts and non-ip adresses
+        if (ip != "Broadcast") and (ip != "ff02"):
+            sketch.add(ip)
+            ip_set.add(ip)
+            ip_amt += 1
 
 print('Stream reading done.')
 print('The file that was read can be found in %s' % file)
