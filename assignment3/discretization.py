@@ -27,10 +27,13 @@ with open(file, "r") as f:
         ip = p.dst.split(":")[0]
         label = p.label
 
-        # Filter the broadcasts and non-ip adresses
+        # Filter the broadcasts and non-ip adresses. Also filter background packets.
         if (ip != "Broadcast") and (ip != "ff02") and (label != 'Background'):
             filtered_packets.append(p)
 
-print(count_skipped)
-for x in filtered_packets:
-    print(x)
+print('Amount of packets skipped due to reading errors: %i' % count_skipped)
+
+### This is room left for the discretization. ###
+
+
+print(str.split('abcdefg'))
