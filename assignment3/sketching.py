@@ -2,18 +2,26 @@ import csv
 import assignment3.countminsketch as cms
 from assignment3.utils import *
 from assignment3.packet import *
+import numpy as np
+
+table_sizes = [10, 100, 1000, 10000]
+num_hash_functions = [10, 20, 30]
 
 file = "data\capture20110816-2.pcap.netflow.labeled"
-table_size = 50
-hash_functions = 10
 ip_set = set()
 ip_amt = 0
 k = 10
 
-sketch = cms.CountMinSketch(table_size, hash_functions)
+sketches = np.empty(((len(table_sizes), len(num_hash_functions))), dtype=object)
+
+print("Initializing min sketches")
+for x in range(len(table_sizes)):
+    for y in range(len(num_hash_functions)):
+        sketches[x][y] = cms.CountMinSketch(table_sizes[x], num_hash_functions[y])
 
 # Treat data as a stream.
 with open(file, "r") as f:
+    print("Reading data")
     reader = csv.reader(f, delimiter=" ")
     for z, line in enumerate(reader):
         if z < 1:
@@ -30,7 +38,9 @@ with open(file, "r") as f:
 
         # Filter the broadcasts and non-ip adresses
         if (ip != "Broadcast") and (ip != "ff02"):
-            sketch.add(ip)
+            for x in range(len(table_sizes)):
+                for y in range(len(num_hash_functions)):
+                    sketches[x][y].add(ip)
             ip_set.add(ip)
             ip_amt += 1
 
@@ -38,13 +48,15 @@ print('Stream reading done.')
 print('The file that was read can be found in %s' % file)
 print('There are %i destination IP addresses' % ip_amt)
 
-ip_dict = dict()
-for ip in ip_set:
-    ip_dict[ip] = sketch[ip]
+for x in range(len(table_sizes)):
+    for y in range(len(num_hash_functions)):
+        ip_dict = dict()
+        for ip in ip_set:
+            ip_dict[ip] = sketches[x][y][ip]
 
-ip_dict = sort_dict_by_value(ip_dict, ip_amt)
-print('Total sketched frequencies, generated with table_size=%i and hash_functions=%i, sorted by value in descending order:' % (table_size, hash_functions))
-print(ip_dict)
-top_k = select_first_k(ip_dict, k)
-print('Top %i highest sketched frequencies:' % k)
-print(top_k)
+        ip_dict = sort_dict_by_value(ip_dict, ip_amt)
+        # print('Total sketched frequencies, generated with table_size=%i and hash_functions=%i, sorted by value in descending order:' % (table_size, hash_functions))
+        # print(ip_dict)
+        top_k = select_first_k(ip_dict, k)
+        print('Top {} highest sketched frequencies with column length {} and {} hash functions:'.format(k, table_sizes[x], num_hash_functions[y]))
+        print(top_k)
