@@ -1,6 +1,7 @@
 \documentclass[]{article}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage[table]{xcolor}
 \usepackage{float}
 \usepackage[a4paper,bindingoffset=0.2in,%
             left=0.75in,right=0.75in,top=1in,bottom=1in,%
@@ -16,6 +17,20 @@
 \maketitle
 
 \section{Sampling task}
+\begin{table}[]
+\centering
+\caption{My caption}
+\label{my-label}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+Reservoir sizes & 1             & 2                                   & 3                                    & 4                                    & 5                                     & 6                                     & 7                                     & 8                                    & 9                                     & 10                                    \\ \hline
+Real data       & 147.32.84.229 & 147.32.84.59                        & 147.32.80.9                          & '147.32.84.138                       & 147.32.84.94                          & 147.32.80.13                          & 147.32.85.7                           & 147.32.85.25                         & 147.32.85.8                           & 147.32.86.134                         \\ \hline
+100             & 147.32.84.229 & \cellcolor{red}147.32.80.9 & \cellcolor{red}147.32.84.59 & \cellcolor{red}147.32.84.94 & \cellcolor{red}147.32.84.138 & \cellcolor{red}147.32.84.164 & \cellcolor{red}129.241.62.54 & \cellcolor{red}147.32.80.13 & \cellcolor{red}147.32.84.111 & \cellcolor{red}147.32.84.130 \\ \hline
+1000            & 147.32.84.229 & \cellcolor{red}147.32.80.9 & \cellcolor{red}147.32.84.59 & 147.32.84.138                        & 147.32.84.94                          & 147.32.80.13                          & 147.32.85.7                           & \cellcolor{red}147.32.85.8  & \cellcolor{red}147.32.85.25  & \cellcolor{red}147.32.85.34  \\ \hline
+10000           & 147.32.84.229 & 147.32.84.59                        & 147.32.80.9                          & 147.32.84.138                        & 147.32.84.94                          & 147.32.80.13                          & '147.32.85.7                          & 147.32.85.25                         & 147.32.85.8                           & \cellcolor{red}88.176.79.163 \\ \hline
+100000          & 147.32.84.229 & 147.32.84.59                        & 147.32.80.9                          & 147.32.84.138                        & 147.32.84.94                          & 147.32.80.13                          & 147.32.85.7                           & 147.32.85.25                         & 147.32.85.8                           & \cellcolor{red}88.176.79.163 \\ \hline
+\end{tabular}
+\end{table}
 \section{Sketching task}
 \section{Botnet flow data discretization task}
 \section{Botnet profiling task}
