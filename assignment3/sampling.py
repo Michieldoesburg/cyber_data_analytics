@@ -10,11 +10,16 @@ addresses = []
 ip_freq = dict()
 ip_amt = 0
 k = 10
+# Define the host IPs you are interested in.
+infected_host_ips = ['147.32.84.165']
+# Set to true if you want to bypass the host IP check.
+scan_all = False
+
 
 for x in reservoir_size_range:
     samples.append(MinWiseSample(x))
 
-file = "data\capture20110816-2.pcap.netflow.labeled"
+file = "data\capture20110818-2.pcap.netflow.labeled"
 
 # Treat data as a stream.
 with open(file, "r") as f:
@@ -29,10 +34,11 @@ with open(file, "r") as f:
         date = line[0] + ' ' + new_args[0]
         p = packet(date, new_args[1], new_args[2], new_args[3], new_args[5], new_args[6], new_args[7], new_args[8], new_args[9], new_args[10], new_args[11])
 
+        src = p.src.split(':')[0]
         ip = p.dst.split(":")[0]
 
         # Filter the broadcasts and non-ip adresses
-        if (ip != "Broadcast") and (ip != "ff02"):
+        if (ip != "Broadcast") and (ip != "ff02") and (scan_all or src in infected_host_ips):
             # Add to the min-wise sampling pool.
             for sample in samples:
                 sample.add(ip)
@@ -72,5 +78,5 @@ for i, sample in enumerate(samples):
     first_k_sampled = select_first_k(sample, k)
     print('Top {} highest frequencies of the sampled frequencies with reservoir size {}:'.format(k,  10**(i+2)))
     print(first_k_sampled)
-    print('\n')
-    print('These last two sets have %i IP addresses in common, %i of which are in the same position' % (keys_in_common(first_k_all, first_k_sampled), keys_in_same_position(first_k_all, first_k_sampled)))
+    print('This set has %i IP addresses in common with the normal sample, %i of which are in the same position' % (keys_in_common(first_k_all, first_k_sampled), keys_in_same_position(first_k_all, first_k_sampled)))
+    print()

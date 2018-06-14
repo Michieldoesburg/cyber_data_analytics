@@ -15,6 +15,8 @@ def sort_dict_by_value(freq, max_val):
 
 def select_first_k(dictionary, k):
     keyset = list(dictionary.keys())
+    if len(keyset) < k:
+        return dictionary
     res = dict()
     for i in range(k):
         key = keyset[i]
@@ -32,7 +34,7 @@ def keys_in_same_position(dict1, dict2):
     count = 0
     keys1, keys2 = list(dict1.keys()), list(dict2.keys())
     for i in range(len(keys1)):
-        if keys1[i] == keys2[i]:
+        if i < len(keys2) and keys1[i] == keys2[i]:
             count += 1
     return count
 
