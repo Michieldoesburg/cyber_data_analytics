@@ -1,12 +1,13 @@
 import csv
 from assignment3.utils import *
 from assignment3.packet import *
+from assignment3.attribute_mapping import *
 
 file = "data\CTU13-scenario10.pcap.netflow.labeled"
 
 filtered_packets = []
 count_skipped = 0
-attribute_mapping = dict()
+attribute_mapping = AttMap()
 
 # This is a custom transformation method to keep only certain elements of the packet.
 def transform_packet(p):
@@ -40,11 +41,15 @@ with open(file, "r") as f:
 
         # Filter the broadcasts and non-ip adresses. Also filter background packets.
         if (ip != "Broadcast") and (ip != "ff02") and (label != 'Background'):
+            p = transform_packet(p)
+            attribute_mapping.add_packet(p)
             filtered_packets.append(p)
 
 print('Amount of packets skipped due to reading errors: %i' % count_skipped)
 
-### This is room left for the discretization. ###
+# Create digit list of packets.
+signal = attribute_mapping.encode_full_netflow(filtered_packets, filtered_packets[0].keys())
+print('Encoded netflow:')
+print(signal)
 
-
-print(str.split('abcdefg'))
+# print(str.split('abcdefg'))
