@@ -8,33 +8,14 @@ filtered_packets = []
 count_skipped = 0
 attribute_mapping = dict()
 
-# Implement attribute mapping M_i, i = 0...k as explained in section IV of the paper.
-def add_to_attribute_map(x, feature):
-    # Check if feature in attribute_mapping
-    if feature in attribute_mapping:
-        mapping = attribute_mapping[feature]
-        if not x in mapping:
-            # If the value is not yet registered, encode it.
-            encoded_value = len(list(mapping.keys()))
-            mapping[x] = encoded_value
-    else:
-        new_dict = dict()
-        new_dict[x] = 0
-        attribute_mapping[feature] = new_dict
-
-# Encoding of the netflow using the generated attribute mapping.
-def encode_netflow(p, features):
-    # define spaceSize
-    spaceSize = 1
-    for f in features:
-        spaceSize = spaceSize*len(list(attribute_mapping[f]))
-    code = 0
-    for f in features:
-        mapping = attribute_mapping[f]
-        code += (mapping[p[f]]*int(float(spaceSize)/float(len(mapping.keys()))))
-        spaceSize = int(float(spaceSize)/float(len(mapping.keys())))
-    return code
-
+# This is a custom transformation method to keep only certain elements of the packet.
+def transform_packet(p):
+    bytes_per_packet = int(float(p.bytes)/float(p.packets))
+    flags = p.flags
+    result = dict()
+    result['Bytes per packet'] = bytes_per_packet
+    result['Flags'] = flags
+    return result
 
 
 # Treat data as a stream.
