@@ -7,7 +7,7 @@ class AttMap(object):
     def get_space_size(self):
         space_size = 1
         for f in self.attrmap.keys():
-            space_size = space_size * len(list(self.attrmap.keys()))
+            space_size = space_size * len(list(self.attrmap[f].keys()))
         return space_size
 
     def add_packet(self, p):
