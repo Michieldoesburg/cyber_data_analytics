@@ -32,10 +32,10 @@ with open(file, "r") as f:
         args = line[1].split("\t")
         new_args = remove_empty_strings(args)
         date = line[0] + ' ' + new_args[0]
-        p = packet(date, new_args[1], new_args[2], new_args[3], new_args[5], new_args[6], new_args[7], new_args[8], new_args[9], new_args[10], new_args[11])
+        p = packet(date, new_args[1], new_args[2], new_args[3].split(':')[0], new_args[5].split(':')[0], new_args[6], new_args[7], new_args[8], new_args[9], new_args[10], new_args[11])
 
-        src = p.src.split(':')[0]
-        ip = p.dst.split(":")[0]
+        src = p.src
+        ip = p.dst
 
         # Filter the broadcasts and non-ip adresses
         if (ip != "Broadcast") and (ip != "ff02") and (scan_all or src in infected_host_ips):
