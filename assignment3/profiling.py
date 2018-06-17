@@ -1,10 +1,14 @@
 import csv
 from assignment3.utils import *
 from assignment3.packet import *
-from assignment3.attribute_mapping import *
-from nltk.probability import *
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+import numpy as np
+import pandas as pd
+from seqlearn.hmm import MultinomialHMM
+from sklearn.model_selection import KFold
+from sklearn.metrics import confusion_matrix
 
-file = "data\CTU13-scenario10.pcap.netflow.labeled"
+file = "data\capture20110818-2.pcap.netflow.labeled"
 
 filtered_packets = []
 count_skipped = 0
@@ -12,10 +16,10 @@ label_actual = []
 
 # This is a custom transformation method to keep only certain elements of the packet.
 def transform_packet(p):
-    bytes_per_packet = int(float(p.bytes)/float(p.packets))
+    source = p.src
     flags = p.flags
     result = dict()
-    result['Bytes per packet'] = bytes_per_packet
+    result['Source'] = source
     result['Flags'] = flags
     return result
 
@@ -50,3 +54,47 @@ with open(file, "r") as f:
             filtered_packets.append(p)
 
 print('Amount of packets skipped due to reading errors: %i' % count_skipped)
+
+# Parameters for label encoding.
+cat_feat = [0, 1]
+le = LabelEncoder()
+
+arr = pd.DataFrame(filtered_packets).as_matrix().T
+ls_is_set = False
+ls = 0
+size = arr.shape
+amt_rows = size[0]
+for i in range(amt_rows):
+    row = arr[i]
+    row = le.fit_transform(row)
+    if not ls_is_set:
+        ls = np.array([row])
+        ls_is_set = True
+    else:
+        ls = np.append(ls, [row], 0)
+X = ls.T
+y = np.array(label_actual).T
+
+kfold = KFold(n_splits=10).split(X)
+
+TP, FP, TN, FN = 0, 0, 0, 0
+
+for fold in kfold:
+    train_indices = fold[0]
+    test_indices = fold[1]
+    X_train, y_train = X[train_indices], y[train_indices]
+    X_test, y_test = X[test_indices], y[test_indices]
+    clf = MultinomialHMM()
+    clf_fit = clf.fit(X_train, y_train, len(train_indices))
+    y_predict = clf.predict(X_test, y_test)
+    cm = confusion_matrix(y_test, y_predict)
+    tn, fp, fn, tp = cm.ravel()
+    TP += tp
+    FP += fp
+    TN += tn
+    FN += fn
+
+print('TP: ' + str(TP))
+print('FP: ' + str(FP))
+print('TN: ' + str(TN))
+print('FN: ' + str(FN))
