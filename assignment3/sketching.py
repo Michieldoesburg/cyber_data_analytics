@@ -4,7 +4,7 @@ from assignment3.utils import *
 from assignment3.packet import *
 import numpy as np
 
-table_sizes = [10, 100, 1000, 10000]
+table_depth = [10, 100, 1000, 10000]
 num_hash_functions = [10, 20, 30]
 
 file = "data\capture20110816-2.pcap.netflow.labeled"
@@ -12,12 +12,12 @@ ip_set = set()
 ip_amt = 0
 k = 10
 
-sketches = np.empty(((len(table_sizes), len(num_hash_functions))), dtype=object)
+sketches = np.empty(((len(table_depth), len(num_hash_functions))), dtype=object)
 
 print("Initializing min sketches")
-for x in range(len(table_sizes)):
+for x in range(len(table_depth)):
     for y in range(len(num_hash_functions)):
-        sketches[x][y] = cms.CountMinSketch(table_sizes[x], num_hash_functions[y])
+        sketches[x][y] = cms.CountMinSketch(table_depth[x], num_hash_functions[y])
 
 # Treat data as a stream.
 with open(file, "r") as f:
@@ -37,7 +37,7 @@ with open(file, "r") as f:
 
         # Filter the broadcasts and non-ip adresses
         if (ip != "Broadcast") and (ip != "ff02"):
-            for x in range(len(table_sizes)):
+            for x in range(len(table_depth)):
                 for y in range(len(num_hash_functions)):
                     sketches[x][y].add(ip)
             ip_set.add(ip)
@@ -47,7 +47,7 @@ print('Stream reading done.')
 print('The file that was read can be found in %s' % file)
 print('There are %i destination IP addresses' % ip_amt)
 
-for x in range(len(table_sizes)):
+for x in range(len(table_depth)):
     for y in range(len(num_hash_functions)):
         ip_dict = dict()
         for ip in ip_set:
@@ -57,5 +57,5 @@ for x in range(len(table_sizes)):
         # print('Total sketched frequencies, generated with table_size=%i and hash_functions=%i, sorted by value in descending order:' % (table_size, hash_functions))
         # print(ip_dict)
         top_k = select_first_k(ip_dict, k)
-        print('Top {} highest sketched frequencies with column length {} and {} hash functions:'.format(k, table_sizes[x], num_hash_functions[y]))
+        print('Top {} highest sketched frequencies with column length {} and {} hash functions:'.format(k, table_depth[x], num_hash_functions[y]))
         print(top_k)
