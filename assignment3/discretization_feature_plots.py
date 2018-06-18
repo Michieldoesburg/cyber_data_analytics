@@ -10,6 +10,11 @@ count_skipped = 0
 values_per_letter = 1.0
 label_actual = []
 
+counts = {}
+nf_counts = {}
+num_fraud = 0.0
+num_nonfraud = 0.0
+
 # Treat data as a stream.
 with open(file, "r") as f:
     reader = csv.reader(f, delimiter=" ")
@@ -35,8 +40,12 @@ with open(file, "r") as f:
         if (ip != "Broadcast") and (ip != "ff02") and (label != 'Background'):
             if label == 'LEGITIMATE':
                 label_actual.append(0)
+                num_nonfraud += 1
+                nf_counts[p.flags] = nf_counts.get(p.flags, 0) + 1
             if label == 'Botnet':
                 label_actual.append(1)
+                counts[p.flags] = counts.get(p.flags, 0) + 1
+                num_fraud += 1
             filtered_packets.append(p)
 
         print(z)
@@ -46,6 +55,7 @@ good_values = []
 bad_indeces = []
 bad_values = []
 
+# Plot the #bytes per packet.
 for i, p in enumerate(filtered_packets):
     if p.label == "Botnet":
         bad_values.append(int(float(p.bytes) / float(p.packets)))
@@ -57,4 +67,36 @@ for i, p in enumerate(filtered_packets):
 plt.scatter(good_indeces, good_values, c="blue")
 plt.scatter(bad_indeces, bad_values, c="red")
 
+plt.show()
+
+#Plot the flags in malignant vs benign netflows.
+for x in counts.keys():
+    counts[x] = counts[x] / num_fraud
+
+for x in nf_counts.keys():
+    nf_counts[x] = nf_counts[x] / num_nonfraud
+
+final_dict = {}
+for key in nf_counts.keys():
+    final_dict[key] = (nf_counts.get(key, 0), counts.get(key, 0))
+
+data = final_dict
+names = list(data.keys())
+values = list(data.values())
+
+X = data.keys()
+Y = []
+Z = []
+
+for x in X:
+    Y.append(data.get(x, 0)[0])
+    Z.append(data.get(x, 0)[1])
+
+_X = np.arange(len(X))
+
+plt.bar(_X - 0.2, Y, 0.4)
+plt.bar(_X + 0.2, Z, 0.4)
+plt.xticks(_X, X) # set labels manually
+
+plt.suptitle("Percentage of non-fraudulent vs percentage of fraudulent transactions per issuer.")
 plt.show()
