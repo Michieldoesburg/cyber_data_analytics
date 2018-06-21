@@ -1,4 +1,4 @@
-file = "data\capture20110818-2.pcap.netflow.labeled"
+file = "data\CTU13-scenario10.pcap.netflow.labeled"
 from assignment3.utils import *
 from assignment3.packet import *
 import matplotlib.pyplot as plt
@@ -98,5 +98,8 @@ plt.bar(_X - 0.2, Y, 0.4)
 plt.bar(_X + 0.2, Z, 0.4)
 plt.xticks(_X, X) # set labels manually
 
-plt.suptitle("Percentage of non-fraudulent vs percentage of fraudulent transactions per issuer.")
+plt.suptitle("Percentage of malicious netflows per network protocol.")
 plt.show()
+
+print(num_fraud)
+print(num_nonfraud)
