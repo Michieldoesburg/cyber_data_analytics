@@ -4,11 +4,11 @@ from assignment3.packet import *
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 import numpy as np
 import pandas as pd
-from seqlearn.hmm import MultinomialHMM
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import KFold
 from sklearn.metrics import confusion_matrix
 
-file = "data\capture20110818-2.pcap.netflow.labeled"
+file = "data\CTU13-scenario10.pcap.netflow.labeled"
 
 filtered_packets = []
 count_skipped = 0
@@ -16,10 +16,10 @@ label_actual = []
 
 # This is a custom transformation method to keep only certain elements of the packet.
 def transform_packet(p):
-    source = p.src
+    protocol = p.protocol
     flags = p.flags
     result = dict()
-    result['Source'] = source
+    result['Protocol'] = protocol
     result['Flags'] = flags
     return result
 
@@ -84,9 +84,11 @@ for fold in kfold:
     test_indices = fold[1]
     X_train, y_train = X[train_indices], y[train_indices]
     X_test, y_test = X[test_indices], y[test_indices]
-    clf = MultinomialHMM()
+    clf = LinearRegression()
     clf_fit = clf.fit(X_train, y_train, len(train_indices))
-    y_predict = clf.predict(X_test, y_test)
+    y_predict = clf.predict(X_test)
+    # If score is greater than 0.5, then it is probably malicious, else it is probably benign (basic Bayesian classification)
+    y_predict = y_predict > 0.5
     cm = confusion_matrix(y_test, y_predict)
     tn, fp, fn, tp = cm.ravel()
     TP += tp
