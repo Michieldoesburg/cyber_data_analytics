@@ -93,12 +93,17 @@ for k in letters_per_host.keys():
         # Host is not infected.
         host_infection[k] = 0
 
-# Determine one infected host and one non-infected host to use as example:
-host_inf = sample(infected_hosts, 1)[0]
-host_non_inf = sample(non_infected_hosts, 1)[0]
+# Determine one infected host and one non-infected host to use as example.
+# The example will be the string that is the longest.
+infected_host_profile = ''
+non_infected_host_profile = ''
 
-infected_host_profile = letters_per_host[host_inf]
-non_infected_host_profile = letters_per_host[host_non_inf]
+for host in letters_per_host:
+    string = letters_per_host[host]
+    if host in infected_hosts and len(string) > len(infected_host_profile):
+        infected_host_profile = string
+    if host in non_infected_hosts and len(string) > len(non_infected_host_profile):
+        non_infected_host_profile = string
 
 # Determine TN, FP, FN, TP
 tn, fp, fn, tp = 0, 0, 0, 0
