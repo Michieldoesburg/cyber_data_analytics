@@ -18,10 +18,10 @@ label_actual = []
 
 # This is a custom transformation method to keep only certain elements of the packet.
 def transform_packet(p):
-    bytes_per_packet = int(float(p.bytes)/float(p.packets))
+    protocol = p.protocol
     flags = p.flags
     result = dict()
-    result['Bytes per packet'] = bytes_per_packet
+    result['Protocol'] = protocol
     result['Flags'] = flags
     return result
 
