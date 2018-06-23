@@ -9,7 +9,8 @@ from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import KFold
 from sklearn.metrics import confusion_matrix
 
-file = "data\CTU13-scenario10.pcap.netflow.labeled"
+# Note: you will have to download the dataset from the CTU13 website. It could not be put on the Github repo. Sorry.
+file = "data\capture20110818.pcap.netflow.labeled"
 
 filtered_packets = []
 filtered_packets_host = []

@@ -6,7 +6,8 @@ from assignment3.SAX_adapted import *
 from ngram import NGram
 from random import sample
 
-file = "data\CTU13-scenario10.pcap.netflow.labeled"
+# Note: you will have to download the dataset from the CTU13 website. It could not be put on the Github repo. Sorry.
+file = "data\capture20110818.pcap.netflow.labeled"
 
 filtered_packets = []
 count_skipped = 0
