@@ -13,13 +13,13 @@ k = 10
 # Define the host IPs you are interested in.
 infected_host_ips = ['147.32.84.165']
 # Set to true if you want to bypass the host IP check.
-scan_all = False
+scan_all = True
 
 
 for x in reservoir_size_range:
     samples.append(MinWiseSample(x))
 
-file = "data\capture20110818-2.pcap.netflow.labeled"
+file = "data\capture20110816-2.pcap.netflow.labeled"
 
 # Treat data as a stream.
 with open(file, "r") as f:
